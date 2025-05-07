@@ -1,0 +1,20 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/${REALM_NAME:wagduck}
+          jwk-set-uri: http://localhost:8080/realms/${REALM_NAME:wagduck}/protocol/openid-connect/certs
+  application:
+    name: wagduck
+  liquibase:
+    liquibase-schema: migrations
+  datasource:
+    url: jdbc:postgresql://localhost:5432/wagduck
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+server:
+  servlet:
+    context-path: /api
+  port: 8088

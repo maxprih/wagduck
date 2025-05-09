@@ -32,11 +32,11 @@ public class GeneratorController {
         GeneratedFileResult result = generationService.generateProject(projectId, UUID.fromString(jwt.getSubject()));
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + result.filename() + "\"");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + result.filename());
         headers.add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
         headers.add(HttpHeaders.PRAGMA, "no-cache");
         headers.add(HttpHeaders.EXPIRES, "0");
-
+        headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
         log.info("Successfully generated file '{}'. Sending response.", result.filename());
 
         return ResponseEntity.ok()

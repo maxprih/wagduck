@@ -20,4 +20,5 @@ public class DockerComposeModel {
     private String dbPassword;          // Default password
     private Map<String, String> dbEnvVars; // Environment variables for the DB container
     private String appDbUrlEnvVar;      // Full JDBC URL for the app container using service name
+    private String appLanguage;
 }

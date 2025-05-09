@@ -1,11 +1,12 @@
 server.port=${serverPort}
+server.servlet.context-path=/api/v1
 
 spring.application.name=${applicationName}
 <#if dbUrl?? && dbUrl?has_content>
 
-spring.datasource.url=${dbUrl}
-spring.datasource.username=${dbUsername}
-spring.datasource.password=${dbPassword}
+spring.datasource.url=${r"${DB_URL:"}${dbUrl}}
+spring.datasource.username=${r"${DB_USER:"}${dbUsername}}
+spring.datasource.password=${r"${DB_PASSWORD:"}${dbPassword}}
 
 spring.jpa.hibernate.ddl-auto=${jpaDdlAuto!'update'}
 spring.jpa.show-sql=${jpaShowSql?string('true', 'false')}

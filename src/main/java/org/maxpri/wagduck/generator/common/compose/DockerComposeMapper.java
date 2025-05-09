@@ -27,6 +27,7 @@ public interface DockerComposeMapper {
     @Mapping(target = "dbPassword", constant = DEFAULT_DB_PASSWORD)
     @Mapping(target = "dbEnvVars", source = "config", qualifiedByName = "determineDbEnvVars")
     @Mapping(target = "appDbUrlEnvVar", source = "config", qualifiedByName = "determineAppDbUrl")
+    @Mapping(target = "appLanguage", expression = "java(config.getLanguage().name())")
     DockerComposeModel toDockerComposeModel(ProjectConfiguration config);
 
     @Named("determineDbImage")

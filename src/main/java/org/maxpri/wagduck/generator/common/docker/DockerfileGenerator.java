@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DockerfileGenerator extends BaseFileGenerator<ProjectConfiguration> {
 
-    private static final String DOCKERFILE_TEMPLATE = "common/newdock.ftl"; // Updated path
+    private static final String DOCKERFILE_TEMPLATE = "java/dockerfile.java.ftl";
     private final DockerfileMapper dockerfileMapper;
 
     public DockerfileGenerator(FreeMarkerTemplateProcessor templateProcessor, DockerfileMapper dockerfileMapper) {

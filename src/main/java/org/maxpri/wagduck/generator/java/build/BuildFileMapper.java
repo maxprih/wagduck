@@ -38,7 +38,7 @@ public interface BuildFileMapper {
     @Mapping(target = "projectName", expression = "java(config.getProjectName())")
     @Mapping(target = "basePackage", expression = "java(config.getBasePackage())")
     @Mapping(target = "javaVersion", expression = "java(config.getLanguageVersion())")
-    @Mapping(target = "springBootVersion", expression = "java(config.getFrameworkVersion())")
+    @Mapping(target = "springBootVersion", expression = "java(\"3.4.5\")")
     @Mapping(target = "springBootStarters", source = "config", qualifiedByName = "determineStarters")
     @Mapping(target = "databaseDependencies", source = "config", qualifiedByName = "determineDatabaseDependencies")
     @Mapping(target = "utilityDependencies", source = "config", qualifiedByName = "determineUtilityDependencies")

@@ -28,7 +28,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "api_endpoint_definition", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"project_config_id", "httpPath", "httpMethod"}) // Путь+Метод уникальны в рамках проекта
+    @UniqueConstraint(columnNames = {"project_config_id", "httpPath", "httpMethod"})
 })
 @EntityListeners(AuditingEntityListener.class)
 @Getter

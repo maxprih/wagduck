@@ -36,7 +36,6 @@ public class GenerationService {
 
         log.debug("Using generator: {}", generator.getClass().getSimpleName());
 
-        // 4. Delegate generation to the specific generator
         try {
             GeneratedFileResult result = generator.generateProject(projectConfig);
             log.info("Controller generation completed successfully by {}", generator.getClass().getSimpleName());

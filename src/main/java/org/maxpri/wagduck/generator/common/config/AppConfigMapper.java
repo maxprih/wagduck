@@ -1,4 +1,4 @@
-package org.maxpri.wagduck.generator.java.config;
+package org.maxpri.wagduck.generator.common.config;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

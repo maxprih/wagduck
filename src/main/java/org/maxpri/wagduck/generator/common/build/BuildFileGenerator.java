@@ -1,4 +1,4 @@
-package org.maxpri.wagduck.generator.java.build;
+package org.maxpri.wagduck.generator.common.build;
 
 import org.maxpri.wagduck.domain.entity.ProjectConfiguration;
 import org.maxpri.wagduck.domain.enums.BuildTool;
@@ -20,13 +20,12 @@ public class BuildFileGenerator extends BaseFileGenerator<ProjectConfiguration> 
     @Override
     public GeneratedFileResult generate(ProjectConfiguration config, ProjectConfiguration input) { // Input is config itself
         try {
-//            config.setEnabledOptions(Set.of("USE_LOMBOK"));
             BuildFileModel model = buildFileMapper.toBuildFileModel(config);
             String templateName;
             String filename;
 
             if (config.getBuildTool() == BuildTool.GRADLE) {
-                templateName = "java/build.gradle.kts.ftl";
+                templateName = "common/build.gradle.kts.ftl";
                 filename = "build.gradle.kts";
             } else { // Default to Maven
                 templateName = "java/pom.xml.ftl";

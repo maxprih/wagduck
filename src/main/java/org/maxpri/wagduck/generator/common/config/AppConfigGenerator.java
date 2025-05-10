@@ -1,4 +1,4 @@
-package org.maxpri.wagduck.generator.java.config;
+package org.maxpri.wagduck.generator.common.config;
 
 import org.maxpri.wagduck.domain.entity.ProjectConfiguration;
 import org.maxpri.wagduck.generator.BaseFileGenerator;
@@ -34,7 +34,7 @@ public class AppConfigGenerator extends BaseFileGenerator<ProjectConfiguration> 
                 templateName = "java/application.yml.ftl";
                 filename = "application.yml";
             } else { // Default to properties
-                templateName = "java/application.properties.ftl";
+                templateName = "common/application.properties.ftl";
                 filename = "application.properties";
             }
 

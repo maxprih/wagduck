@@ -14,9 +14,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class RestExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
-    <#list exceptions?sort as exception>
-    @ExceptionHandler(${exception}.class)
-    public ResponseEntity<ErrorResponse> handle${exception}(${exception} e) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.builder()
@@ -26,7 +25,6 @@ public class RestExceptionControllerAdvice extends ResponseEntityExceptionHandle
                         .build());
     }
 
-    </#list>
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {

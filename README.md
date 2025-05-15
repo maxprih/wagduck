@@ -28,10 +28,11 @@
 - **Java 21**
 - **Spring Boot 3**
 - **Freemarker**
-- **S3 (Yandex Object Storage)**
 - **PostgreSQL**
 
 ### **Frontend**
 - **Vue 3**
-- **PrimeVue**
+- **Vuetify**
 
+## Frontend
+https://github.com/maxprih/wagduck-frontend

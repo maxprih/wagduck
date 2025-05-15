@@ -14,6 +14,7 @@ public class ${entityClassName}Controller {
 
     private final ${serviceClassName} ${serviceVariableName};
 
+    <#if apiEndpoints?seq_contains("POST")>
     /**
      * Create a new {@link ${entityPackage}.${entityClassName}}.
      *
@@ -26,7 +27,9 @@ public class ${entityClassName}Controller {
                 .status(HttpStatus.CREATED)
                 .body(${serviceVariableName}.save(request));
     }
+    </#if>
 
+    <#if apiEndpoints?seq_contains("PUT")>
     /**
      * Updates an existing {@link ${entityPackage}.${entityClassName}}.
      *
@@ -42,8 +45,9 @@ public class ${entityClassName}Controller {
                 .status(HttpStatus.OK)
                 .body(${serviceVariableName}.update(${primaryKeyName}, request));
     }
+    </#if>
 
-
+    <#if apiEndpoints?seq_contains("GET_LIST")>
     /**
      * Get all the {@link ${entityPackage}.${entityClassName}}.
      *
@@ -55,7 +59,9 @@ public class ${entityClassName}Controller {
                 .status(HttpStatus.OK)
                 .body(${serviceVariableName}.getAll());
     }
+    </#if>
 
+    <#if apiEndpoints?seq_contains("GET")>
     /**
      * Get the {@link ${entityPackage}.${entityClassName}} by id.
      *
@@ -68,7 +74,9 @@ public class ${entityClassName}Controller {
                 .status(HttpStatus.OK)
                 .body(${serviceVariableName}.get(${primaryKeyName}));
     }
+    </#if>
 
+    <#if apiEndpoints?seq_contains("DELETE")>
     /**
      * Delete the {@link ${entityPackage}.${entityClassName}} by id.
      *
@@ -79,4 +87,5 @@ public class ${entityClassName}Controller {
         ${serviceVariableName}.delete(${primaryKeyName});
         return ResponseEntity.noContent().build();
     }
+    </#if>
 }

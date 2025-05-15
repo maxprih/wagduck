@@ -23,7 +23,6 @@ public class KotlinControllerGenerator extends BaseFileGenerator<EntityDefinitio
     public GeneratedFileResult generate(ProjectConfiguration config, EntityDefinition entity) {
         boolean hasPrimaryKey = entity.getAttributes().stream().anyMatch(AttributeDefinition::isPrimaryKey);
         if (!hasPrimaryKey) {
-            System.err.println("Skipping controller generation for entity " + entity.getEntityName() + " as it has no primary key defined.");
             return null;
         }
         try {
@@ -36,8 +35,6 @@ public class KotlinControllerGenerator extends BaseFileGenerator<EntityDefinitio
 
             return new GeneratedFileResult(fullPath, templateOutput.getBytes());
         } catch (Exception e) {
-            System.err.println("Error generating Kotlin Controller for " + entity.getEntityName() + ": " + e.getMessage());
-            e.printStackTrace(); // Replace with proper logging
             throw new RuntimeException("Failed to generate Kotlin Controller for " + entity.getEntityName(), e);
         }
     }

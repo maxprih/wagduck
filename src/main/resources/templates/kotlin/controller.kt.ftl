@@ -12,24 +12,31 @@ class ${controllerClassName}(
     private val ${serviceFieldName}: ${serviceClassName}
 ) {
 
+    <#if apiEndpoints?seq_contains("POST")>
     @PostMapping
     fun create(@RequestBody dto: ${requestDtoClassName}): ResponseEntity<${responseDtoClassName}> {
         val createdDto = ${serviceFieldName}.create(dto)
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDto)
     }
+    </#if>
 
+    <#if apiEndpoints?seq_contains("GET")>
     @GetMapping("/{${primaryKeyName}}")
     fun getById(@PathVariable ${primaryKeyName}: ${primaryKeyType}): ResponseEntity<${responseDtoClassName}> {
         val dto = ${serviceFieldName}.findById(${primaryKeyName})
         return ResponseEntity.ok(dto)
     }
+    </#if>
 
+    <#if apiEndpoints?seq_contains("GET_LIST")>
     @GetMapping
     fun getAll(): ResponseEntity<List<${responseDtoClassName}>> {
         val dtos = ${serviceFieldName}.findAll()
         return ResponseEntity.ok(dtos)
     }
+    </#if>
 
+    <#if apiEndpoints?seq_contains("PUT")>
     @PutMapping("/{${primaryKeyName}}")
     fun update(
         @PathVariable ${primaryKeyName}: ${primaryKeyType},
@@ -38,15 +45,13 @@ class ${controllerClassName}(
         val updatedDto = ${serviceFieldName}.update(${primaryKeyName}, dto)
         return ResponseEntity.ok(updatedDto)
     }
+    </#if>
 
+    <#if apiEndpoints?seq_contains("DELETE")>
     @DeleteMapping("/{${primaryKeyName}}")
     fun delete(@PathVariable ${primaryKeyName}: ${primaryKeyType}): ResponseEntity<Void> {
-        return try {
-            ${serviceFieldName}.deleteById(${primaryKeyName})
-            ResponseEntity.noContent().build()
-        } catch (e: ${entityNotFoundExceptionName}) {
-            // Optionally log: log.warn("Attempted to delete non-existent ${entityClassNameForLogging} with id ${'$'}{${primaryKeyName}}")
-            ResponseEntity.notFound().build() // Or noContent() if idempotent delete is preferred even for non-existent
-        }
+        ${serviceFieldName}.deleteById(${primaryKeyName})
+        ResponseEntity.noContent().build()
     }
+    </#if>
 }

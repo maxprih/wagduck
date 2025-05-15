@@ -30,7 +30,7 @@ public class ProjectConfiguration {
     private UUID id;
 
     @Column(nullable = false, updatable = false)
-    private UUID ownerId; // Идентификатор пользователя из Keycloak (claim 'sub')
+    private UUID ownerId;
 
     @Column(nullable = false)
     private String projectName;
@@ -63,16 +63,13 @@ public class ProjectConfiguration {
     @Column(nullable = false)
     private DatabaseType databaseType;
 
-    @ElementCollection(fetch = FetchType.EAGER) // Хранить как строки в отдельной таблице
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "project_option", joinColumns = @JoinColumn(name = "project_config_id"))
     @Column(name = "option_name")
-    private Set<String> enabledOptions; // e.g., "USE_LOMBOK", "INCLUDE_SWAGGER", "ENABLE_DOCKER", "INCLUDE_SPRING_SECURITY"
+    private Set<String> enabledOptions;
 
     @OneToMany(mappedBy = "projectConfiguration", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<EntityDefinition> entities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "projectConfiguration", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ApiEndpointDefinition> apiEndpoints = new ArrayList<>();
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

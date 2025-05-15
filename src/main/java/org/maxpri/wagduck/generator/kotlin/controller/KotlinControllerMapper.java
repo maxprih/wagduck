@@ -20,24 +20,17 @@ public interface KotlinControllerMapper {
     @Mapping(target = "baseRequestPath", source = "entity.entityName", qualifiedByName = "determineBasePath")
     @Mapping(target = "serviceClassName", expression = "java(org.maxpri.wagduck.util.NamingUtils.toPascalCase(entity.getEntityName()) + \"Service\")")
     @Mapping(target = "serviceFieldName", expression = "java(org.maxpri.wagduck.util.NamingUtils.toCamelCase(entity.getEntityName()) + \"Service\")")
-    @Mapping(target = "serviceClassImport", expression = "java(config.getBasePackage() + \".service.\" + org.maxpri.wagduck.util.NamingUtils.toPascalCase(entity.getEntityName()) + \"Service\")")
     @Mapping(target = "requestDtoClassName", expression = "java(org.maxpri.wagduck.util.NamingUtils.toPascalCase(entity.getEntityName()) + \"RequestDto\")")
-    @Mapping(target = "requestDtoClassImport", expression = "java(config.getBasePackage() + \".dto.\" + org.maxpri.wagduck.util.NamingUtils.toPascalCase(entity.getEntityName()) + \"RequestDto\")")
     @Mapping(target = "responseDtoClassName", expression = "java(org.maxpri.wagduck.util.NamingUtils.toPascalCase(entity.getEntityName()) + \"ResponseDto\")")
-    @Mapping(target = "responseDtoClassImport", expression = "java(config.getBasePackage() + \".dto.\" + org.maxpri.wagduck.util.NamingUtils.toPascalCase(entity.getEntityName()) + \"ResponseDto\")")
     @Mapping(target = "primaryKeyType", source = "entity.attributes", qualifiedByName = "getControllerPrimaryKeyKotlinType")
     @Mapping(target = "primaryKeyName", source = "entity.attributes", qualifiedByName = "getControllerPrimaryKeyName")
     @Mapping(target = "imports", source = "entity", qualifiedByName = "collectControllerImports")
-    @Mapping(target = "entityClassNameForLogging", source = "entity.entityName", qualifiedByName = "toPascalCaseStatic")
-    @Mapping(target = "entityNotFoundExceptionImport", expression = "java(config.getBasePackage() + \".exception.EntityNotFoundException\")")
-    @Mapping(target = "entityNotFoundExceptionName", expression = "java(\"EntityNotFoundException\")")
     KotlinControllerModel toKotlinControllerDefModel(ProjectConfiguration config, EntityDefinition entity);
 
     @Named("toPascalCaseStatic")
     default String toPascalCaseStatic(String name) {
         return NamingUtils.toPascalCase(name);
     }
-
 
     @Named("determineBasePath")
     default String determineBasePath(String entityName) {
@@ -49,7 +42,7 @@ public interface KotlinControllerMapper {
         return attributes.stream()
                 .filter(AttributeDefinition::isPrimaryKey)
                 .findFirst()
-                .map(attr -> mapDbDataTypeToKotlinBaseType(attr.getDataType())) // Use shared utility or local method
+                .map(attr -> mapDbDataTypeToKotlinBaseType(attr.getDataType()))
                 .orElseThrow(() -> new IllegalStateException("Entity must have a primary key attribute for controller generation."));
     }
 
@@ -58,7 +51,7 @@ public interface KotlinControllerMapper {
         return attributes.stream()
                 .filter(AttributeDefinition::isPrimaryKey)
                 .findFirst()
-                .map(attr -> NamingUtils.toCamelCase(attr.getAttributeName())) // Typically "id"
+                .map(attr -> NamingUtils.toCamelCase(attr.getAttributeName()))
                 .orElseThrow(() -> new IllegalStateException("Entity must have a primary key attribute name for controller generation."));
     }
 
@@ -67,14 +60,12 @@ public interface KotlinControllerMapper {
         Set<String> imports = new HashSet<>();
         imports.add("org.springframework.http.HttpStatus");
         imports.add("org.springframework.http.ResponseEntity");
-        imports.add("org.springframework.web.bind.annotation.*"); // For @RestController, @RequestMapping, @GetMapping etc.
-        // DTOs and Service imports (already covered by direct mappings in KotlinControllerDefModel)
+        imports.add("org.springframework.web.bind.annotation.*");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".dto." + NamingUtils.toPascalCase(entity.getEntityName()) + "RequestDto");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".dto." + NamingUtils.toPascalCase(entity.getEntityName()) + "ResponseDto");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".service." + NamingUtils.toPascalCase(entity.getEntityName()) + "Service");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".exception.EntityNotFoundException");
 
-        // PK Type import if needed
         entity.getAttributes().stream()
                 .filter(AttributeDefinition::isPrimaryKey)
                 .findFirst()
@@ -86,7 +77,6 @@ public interface KotlinControllerMapper {
         return imports;
     }
 
-    // --- Utility methods (ideally refactor to a shared class) ---
     default String mapDbDataTypeToKotlinBaseType(String definitionType) {
         if (definitionType == null) return "Any";
         return switch (definitionType.toLowerCase()) {
@@ -94,14 +84,11 @@ public interface KotlinControllerMapper {
             case "integer", "int" -> "Int";
             case "long", "bigint" -> "Long";
             case "double" -> "Double";
-            case "float" -> "Float";
-            case "decimal", "numeric" -> "java.math.BigDecimal";
             case "boolean", "bool" -> "Boolean";
             case "date" -> "java.time.LocalDate";
             case "timestamp", "datetime" -> "java.time.LocalDateTime";
             case "time" -> "java.time.LocalTime";
             case "uuid" -> "java.util.UUID";
-            case "blob", "bytea" -> "ByteArray";
             default -> "String";
         };
     }

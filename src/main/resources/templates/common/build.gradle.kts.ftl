@@ -46,20 +46,19 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8") // Or kotlin-stdlib
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 <#else>
-    // For Java-only projects, if mapstruct is used:
-    // annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}") // Ensure mapstructVersion is in model
+<#--    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")-->
 </#if>
 
 <#-- Common annotation processors (like MapStruct) declared for both Java and Kotlin -->
 <#-- If MapStruct is always used with Spring: -->
-<#if mapstructVersion??> <#-- Assuming mapstructVersion is in your model -->
-    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
-    <#if useKotlin>
-    kapt("org.mapstruct:mapstruct-processor:${mapstructVersion}")
-    <#else>
-    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
-    </#if>
-</#if>
+<#--<#if mapstructVersion??> &lt;#&ndash; Assuming mapstructVersion is in your model &ndash;&gt;-->
+<#--    implementation("org.mapstruct:mapstruct:${mapstructVersion}")-->
+<#--    <#if useKotlin>-->
+<#--    kapt("org.mapstruct:mapstruct-processor:${mapstructVersion}")-->
+<#--    <#else>-->
+<#--    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")-->
+<#--    </#if>-->
+<#--</#if>-->
 
 <#-- Add other annotation processors here similarly, e.g., Lombok for Java -->
 <#if !useKotlin && lombokVersion??>

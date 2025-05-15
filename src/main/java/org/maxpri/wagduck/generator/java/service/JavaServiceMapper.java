@@ -9,16 +9,12 @@ import org.maxpri.wagduck.util.NamingUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {NamingUtils.class})
 public interface JavaServiceMapper {
 
-    @Mapping(target = "basePackage", expression = "java(config.getBasePackage())")
     @Mapping(target = "servicePackage", expression = "java(config.getBasePackage() + \".service\")")
-    @Mapping(target = "repositoryPackage", expression = "java(config.getBasePackage() + \".repository\")")
-    @Mapping(target = "dtoPackage", expression = "java(config.getBasePackage() + \".dto\")")
-    @Mapping(target = "entityPackage", expression = "java(config.getBasePackage() + \".domain.model\")")
-    @Mapping(target = "exceptionPackage", expression = "java(config.getBasePackage() + \".exception\")")
     @Mapping(target = "serviceClassName", expression = "java(entity.getEntityName() + \"Service\")")
     @Mapping(target = "entityClassName", expression = "java(entity.getEntityName())")
     @Mapping(target = "repositoryClassName", expression = "java(entity.getEntityName() + \"Repository\")")
@@ -31,6 +27,7 @@ public interface JavaServiceMapper {
     @Mapping(target = "primaryKeyName", expression = "java(org.maxpri.wagduck.util.NamingUtils.findPrimaryKeyName(entity))")
     @Mapping(target = "imports", source = "entity", qualifiedByName = "collectServiceImports")
     @Mapping(target = "resourceNotFoundExceptionName", expression = "java(entity.getEntityName() + \"NotFoundException\")")
+    @Mapping(target = "apiEndpoints", source = "entity", qualifiedByName = "collectApiEndpoints")
     JavaServiceModel toJavaServiceModel(ProjectConfiguration config, EntityDefinition entity);
 
     @Named("collectServiceImports")
@@ -64,5 +61,12 @@ public interface JavaServiceMapper {
         }
 
         return imports;
+    }
+
+    @Named("collectApiEndpoints")
+    default Set<String> collectApiEndpoints(EntityDefinition entity) {
+        return entity.getApiEndpoints().stream()
+                .map(endpoint -> endpoint.getApiMethod().name())
+                .collect(Collectors.toSet());
     }
 }

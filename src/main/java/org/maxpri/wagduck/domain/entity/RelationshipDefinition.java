@@ -32,12 +32,10 @@ public class RelationshipDefinition {
     @Generated
     private UUID id;
 
-    // Сущность, ИЗ которой идет связь (владелец поля)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_entity_id", nullable = false)
     private EntityDefinition sourceEntity;
 
-    // Имя поля в исходной сущности (e.g., "orders" в User)
     @Column(nullable = false)
     private String sourceFieldName;
 
@@ -45,34 +43,30 @@ public class RelationshipDefinition {
     @JoinColumn(name = "target_entity_id", nullable = false)
     private EntityDefinition targetEntity;
 
-    // Имя поля в целевой сущности для обратной связи (e.g., "user" в Order). null если однонаправленная.
     @Column
-    private String targetFieldName; // (mappedBy в JPA)
+    private String targetFieldName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RelationshipType relationshipType; // Enum: ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY
+    private RelationshipType relationshipType;
 
-    // Кто владеет связью? Важно для JPA (где @JoinColumn / @JoinTable)
-    // true - sourceEntity владеет (JoinColumn/Table здесь), false - targetEntity владеет
     @Column(nullable = false)
-    private boolean owningSide = true; // Обычно true для *ToOne, false для OneToMany без mappedBy, true для одного из ManyToMany
+    private boolean owningSide = true;
 
     @Enumerated(EnumType.STRING)
-    private FetchType fetchType = FetchType.LAZY; // По умолчанию LAZY
-
-    // --- Настройки для Join (если нужно переопределить стандартные) ---
-    @Column
-    private String joinColumnName; // Для *ToOne или инверсной стороны OneToMany
+    private FetchType fetchType = FetchType.LAZY;
 
     @Column
-    private String joinTableName; // Для ManyToMany
+    private String joinColumnName;
 
     @Column
-    private String joinTableSourceColumnName; // Для ManyToMany
+    private String joinTableName;
 
     @Column
-    private String joinTableTargetColumnName; // Для ManyToMany
+    private String joinTableSourceColumnName;
+
+    @Column
+    private String joinTableTargetColumnName;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

@@ -17,11 +17,10 @@ import java.util.UUID;
 public class GenerationService {
 
     private final ProjectService projectService;
-    private final List<LanguageGenerator> languageGenerators; // Spring injects all implementations
+    private final List<LanguageGenerator> languageGenerators;
 
     @Transactional(readOnly = true)
     public GeneratedFileResult generateProject(UUID projectId, UUID ownerId) {
-
         ProjectConfiguration projectConfig = projectService.findProjectByIdAndOwnerInternal(projectId, ownerId);
 
         LanguageGenerator generator = languageGenerators.stream()
@@ -34,14 +33,9 @@ public class GenerationService {
                             "Code generation not supported for: " + projectConfig.getLanguage() + " / " + projectConfig.getFramework());
                 });
 
-        log.debug("Using generator: {}", generator.getClass().getSimpleName());
-
         try {
-            GeneratedFileResult result = generator.generateProject(projectConfig);
-            log.info("Controller generation completed successfully by {}", generator.getClass().getSimpleName());
-            return result;
+            return generator.generateProject(projectConfig);
         } catch (Exception e) {
-            log.error("Error during code generation by {}", generator.getClass().getSimpleName(), e);
             throw new RuntimeException("Generation failed: " + e.getMessage(), e);
         }
     }

@@ -26,9 +26,7 @@ public class GoMainFileGenerator extends BaseFileGenerator<ProjectConfiguration>
             String fileName = "main.go";
 
             return new GeneratedFileResult(fileName, templateOutput.getBytes());
-
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Failed to generate Go main file", e);
         }
     }

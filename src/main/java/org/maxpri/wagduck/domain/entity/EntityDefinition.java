@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "entity_definition", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"project_config_id", "entityName"})
+    @UniqueConstraint(columnNames = {"project_config_id", "entity_name"})
 })
 @EntityListeners(AuditingEntityListener.class)
 @Getter
@@ -36,11 +36,14 @@ public class EntityDefinition {
     @Column
     private String tableName;
 
-    @OneToMany(mappedBy = "entityDefinition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER) // EAGER может быть удобен здесь
+    @OneToMany(mappedBy = "entityDefinition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<AttributeDefinition> attributes = new ArrayList<>();
 
     @OneToMany(mappedBy = "sourceEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<RelationshipDefinition> relationships = new ArrayList<>();
+
+    @OneToMany(mappedBy = "entityDefinition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ApiEndpointDefinition> apiEndpoints = new ArrayList<>();
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

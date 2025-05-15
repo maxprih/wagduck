@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "attribute_definition", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"entity_definition_id", "attributeName"})
+    @UniqueConstraint(columnNames = {"entity_definition_id", "attribute_name"})
 })
 @EntityListeners(AuditingEntityListener.class)
 @Getter
@@ -49,10 +49,10 @@ public class AttributeDefinition {
     private boolean isPrimaryKey;
 
     @Column(name = "is_required", nullable = false)
-    private boolean isRequired; // NOT NULL constraint
+    private boolean isRequired;
 
     @Column(name = "is_unique", nullable = false)
-    private boolean isUnique;   // UNIQUE constraint
+    private boolean isUnique;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

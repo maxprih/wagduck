@@ -9,6 +9,7 @@ import org.maxpri.wagduck.util.NamingUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {NamingUtils.class})
 public interface JavaControllerMapper {
@@ -24,6 +25,7 @@ public interface JavaControllerMapper {
     @Mapping(target = "primaryKeyName", expression = "java(org.maxpri.wagduck.util.NamingUtils.findPrimaryKeyName(entity))")
     @Mapping(target = "basePath", expression = "java(\"/\" + org.maxpri.wagduck.util.NamingUtils.toCamelCase(entity.getEntityName()))")
     @Mapping(target = "imports", source = "entity", qualifiedByName = "generateControllerImports")
+    @Mapping(target = "apiEndpoints", source ="entity", qualifiedByName = "collectApiEndpoints")
     JavaControllerModel toJavaControllerModel(ProjectConfiguration config, EntityDefinition entity);
 
 
@@ -49,5 +51,12 @@ public interface JavaControllerMapper {
         }
 
         return imports;
+    }
+
+    @Named("collectApiEndpoints")
+    default Set<String> collectApiEndpoints(EntityDefinition entity) {
+        return entity.getApiEndpoints().stream()
+                .map(endpoint -> endpoint.getApiMethod().name())
+                .collect(Collectors.toSet());
     }
 }

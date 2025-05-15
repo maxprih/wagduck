@@ -42,7 +42,7 @@ public class GeneratorController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentLength(result.contentBytes().length)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM) // Generic file download
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(result.resource());
     }
 }

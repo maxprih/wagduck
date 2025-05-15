@@ -8,16 +8,16 @@ import java.util.Set;
 @Data
 @Builder
 public class GoMainFileModel {
-    private String packageName; // Should be "main"
-    private String moduleName; // Full module path, e.g., "github.com/maxprih/mygoproject"
-    private String configPackagePath; // e.g., "config" or "internal/config"
-    private String modelsPackagePath; // e.g., "models" or "internal/models" (for AutoMigrate)
+    private String packageName;
+    private String moduleName;
+    private String configPackagePath;
+    private String modelsPackagePath;
     private String repositoryPackagePath;
     private String servicePackagePath;
     private String handlerPackagePath;
     private Set<String> imports;
     private List<GoMainEntityWiringModel> entitiesToWire;
-    private String serverPortEnvVar; // e.g., "SERVER_PORT"
-    private String defaultServerPort; // e.g., "8080"
-    private boolean autoMigrateEntities; // Flag to include GORM AutoMigrate
+    private String serverPortEnvVar;
+    private String defaultServerPort;
+    private boolean autoMigrateEntities;
 }

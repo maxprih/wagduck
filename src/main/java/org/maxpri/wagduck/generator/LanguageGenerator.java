@@ -9,5 +9,5 @@ public interface LanguageGenerator {
 
     boolean supports(TargetLanguage language, TargetFramework framework);
 
-    GeneratedFileResult generateProject(ProjectConfiguration config) throws Exception;
+    GeneratedFileResult generateProject(ProjectConfiguration config);
 }

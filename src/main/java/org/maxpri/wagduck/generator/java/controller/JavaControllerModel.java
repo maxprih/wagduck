@@ -20,4 +20,5 @@ public class JavaControllerModel {
     private String primaryKeyName;
     private String basePath;
     private Set<String> imports;
+    private Set<String> apiEndpoints;
 }

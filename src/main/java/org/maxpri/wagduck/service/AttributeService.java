@@ -11,6 +11,7 @@ import org.maxpri.wagduck.exception.PrimaryKeyAlreadyExistsException;
 import org.maxpri.wagduck.mapper.AttributeMapper;
 import org.maxpri.wagduck.repository.AttributeDefinitionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.AttributeNotFoundException;
 import java.util.List;
@@ -23,6 +24,7 @@ public class AttributeService {
     private final AttributeMapper attributeMapper;
     private final EntityService entityService;
 
+    @Transactional
     public AttributeDefinitionResponse createAttribute(AttributeDefinitionRequest request) {
         EntityDefinition entity = entityService.findEntityByIdInternal(request.getEntityId());
 
@@ -56,7 +58,7 @@ public class AttributeService {
                 .toList();
     }
 
-    @SneakyThrows
+    @Transactional
     public AttributeDefinitionResponse updateAttribute(UUID attributeId, AttributeDefinitionRequest request) {
         AttributeDefinition attribute = findAttributeById(attributeId);
 

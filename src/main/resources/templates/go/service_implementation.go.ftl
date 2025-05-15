@@ -5,11 +5,9 @@ package ${packageName}
     <#assign allImports = allImports + imports>
 </#if>
 
-<#-- Collect necessary imports for Update method's zero-value checks -->
 <#assign needsUUIDImportForUpdate = false>
 <#assign needsTimeImportForUpdate = false>
-<#assign needsSqlImportForUpdate = false> <#-- For sql.NullXXX types -->
-
+<#assign needsSqlImportForUpdate = false>
 <#list methods as method>
     <#if method.name?matches("(?i).*Update.*") && method.updatableFields?has_content>
         <#list method.updatableFields as field>
@@ -63,28 +61,16 @@ func New${entityName}Service(${repositoryFieldName} ${repositoryPackageName?keep
 }
 
 <#list methods as method>
-<#-- Method signature -->
 func (${receiverName} *${structName}) ${method.name}(<#list method.parameters as param>${param.name} ${param.type}<#if param?has_next>, </#if></#list>) (<#list method.returnTypes as rtType>${rtType.name!"_"}<#if rtType.name??> </#if>${rtType.type}<#if rtType?has_next>, </#if></#list>) {
     <#assign firstParamName = method.parameters[0].name> <#-- usually ctx -->
     <#assign secondParam = method.parameters[1]!"">
 
     <#if method.name == "Create${entityName}" || method.name == "Create">
-        <#-- Business logic for Create: validation, defaults, etc. -->
-        <#-- Example:
-        // if ${secondParam.name}.SomeField == "" {
-        //     return nil, errors.New("SomeField is required")
-        // }
-        // ${secondParam.name}.CreatedAt = time.Now()
-        -->
     return ${receiverName}.${repositoryFieldName}.${method.correspondingRepositoryMethodName}(${firstParamName}, ${secondParam.name})
     <#elseif method.name == "Get${entityName}ByID" || method.name == "GetByID">
         <#-- Business logic for GetByID: authorization, specific error mapping -->
     result, err := ${receiverName}.${repositoryFieldName}.${method.correspondingRepositoryMethodName}(${firstParamName}, ${secondParam.name})
     if err != nil {
-        // Example: Map gorm.ErrRecordNotFound to a custom service error
-        // if errors.Is(err, gorm.ErrRecordNotFound) {
-        //    return nil, YourCustomNotFoundError
-        // }
         return nil, err
     }
     // if result == nil { // If repository might return (nil, nil) for not found

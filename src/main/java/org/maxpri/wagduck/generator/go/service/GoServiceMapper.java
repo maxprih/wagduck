@@ -176,7 +176,7 @@ public interface GoServiceMapper {
                 .name("Create" + entityNamePascal)
                 .description("handles creating a new " + entity.getEntityName().toLowerCase() + ".")
                 .parameters(List.of(ctxParam, GoParameterModel.builder().name(entityNameCamel).type(createRequestType).build()))
-                .returnTypes(List.of(GoParameterModel.builder().name("created"+entityNamePascal).type(responseType).build(), GoParameterModel.builder().type("error").build()))
+                .returnTypes(List.of(GoParameterModel.builder().name("created"+entityNamePascal).type(responseType).build(), GoParameterModel.builder().name("err").type("error").build()))
                 .correspondingRepositoryMethodName("Create") // Assumes repo method is "Create"
                 .build()); // updatableFields will default to empty list
 
@@ -185,7 +185,7 @@ public interface GoServiceMapper {
                 .name("Get" + entityNamePascal + "ByID")
                 .description("handles retrieving a " + entity.getEntityName().toLowerCase() + " by its ID.")
                 .parameters(List.of(ctxParam, GoParameterModel.builder().name(idParamName).type(idType).build()))
-                .returnTypes(List.of(GoParameterModel.builder().name(entityNameCamel).type(responseType).build(), GoParameterModel.builder().type("error").build()))
+                .returnTypes(List.of(GoParameterModel.builder().name(entityNameCamel).type(responseType).build(), GoParameterModel.builder().name("err").type("error").build()))
                 .correspondingRepositoryMethodName("GetByID") // Assumes repo method is "GetByID"
                 .build());
 
@@ -225,7 +225,7 @@ public interface GoServiceMapper {
                 ))
                 .returnTypes(List.of(
                         GoParameterModel.builder().name("updated" + entityNamePascal).type(responseType).build(),
-                        GoParameterModel.builder().type("error").build()
+                        GoParameterModel.builder().name("err").type("error").build()
                 ))
                 .correspondingRepositoryMethodName("Update") // Assumes repo method is "Update" and takes full model
                 .updatableFields(updatableFieldsForEntity) // Set the populated list here
@@ -236,7 +236,7 @@ public interface GoServiceMapper {
                 .name("Delete" + entityNamePascal)
                 .description("handles deleting a " + entity.getEntityName().toLowerCase() + " by its ID.")
                 .parameters(List.of(ctxParam, GoParameterModel.builder().name(idParamName).type(idType).build()))
-                .returnTypes(List.of(GoParameterModel.builder().type("error").build()))
+                .returnTypes(List.of(GoParameterModel.builder().name("err").type("error").build()))
                 .correspondingRepositoryMethodName("Delete") // Assumes repo method is "Delete"
                 .build());
 
@@ -245,7 +245,7 @@ public interface GoServiceMapper {
                 .name("List" + entityNamePascal + "s") // Common to pluralize with 's'
                 .description("handles retrieving a list of " + entity.getEntityName().toLowerCase() + "s.")
                 .parameters(List.of(ctxParam)) // Consider adding ListOptions parameter for pagination/filtering
-                .returnTypes(List.of(GoParameterModel.builder().name(entityNameCamel + "List").type(responseSliceType).build(), GoParameterModel.builder().type("error").build()))
+                .returnTypes(List.of(GoParameterModel.builder().name(entityNameCamel + "List").type(responseSliceType).build(), GoParameterModel.builder().name("err").type("error").build()))
                 .correspondingRepositoryMethodName("List") // Assumes repo method is "List"
                 .build());
         return methods;

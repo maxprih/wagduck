@@ -29,36 +29,28 @@ public interface GoMainFileMapper {
     @Mapping(target = "autoMigrateEntities", expression = "java(checkAutoMigrateOption(config))")
     GoMainFileModel mapToMainFileModel(ProjectConfiguration config);
 
-
-    // --- Helper Methods ---
     default String deriveGoConfigPackagePath(ProjectConfiguration config) {
-        // return config.getGoConfigPackagePath(); // Ideal
-        return "/config"; // Default
+        return "/config";
     }
 
     default String deriveGoModelsPackagePath(ProjectConfiguration config) {
-        // return config.getGoModelsPackagePath(); // Ideal
-        return "/model"; // Default
+        return "/model";
     }
 
     default String deriveGoRepositoryPackagePath(ProjectConfiguration config) {
-        // return config.getGoRepositoryPackagePath(); // Ideal
-        return "/repository"; // Default
+        return "/repository";
     }
 
     default String deriveGoServicePackagePath(ProjectConfiguration config) {
-        // return config.getGoServicePackagePath(); // Ideal
-        return "/service"; // Default
+        return "/service";
     }
 
     default String deriveGoHandlerPackagePath(ProjectConfiguration config) {
-        // return config.getGoHandlerPackagePath(); // Ideal
-        return "/handler"; // Default
+        return "/handler";
     }
 
     default boolean checkAutoMigrateOption(ProjectConfiguration config) {
-        // Example: return config.getGoOptions().getBoolean("AUTO_MIGRATE_ENTITIES", true);
-        return true; // Default to true for now
+        return true;
     }
 
     @Named("collectMainImports")
@@ -75,18 +67,10 @@ public interface GoMainFileMapper {
         return config.getEntities().stream()
                 .map(entity -> GoMainEntityWiringModel.builder()
                         .entityName(NamingUtils.toPascalCase(entity.getEntityName()))
-                        .entityNamePlural(NamingUtils.toPascalCase(entity.getEntityName()) + "s")
-                        // Assuming package names are just the last part of the path for aliases in template
-                        .repositoryPackageAlias(deriveGoRepositoryPackagePath(config).substring(deriveGoRepositoryPackagePath(config).lastIndexOf('/') + 1))
-                        .repositoryStructName("gorm" + NamingUtils.toPascalCase(entity.getEntityName()) + "Repository")
-                        .repositoryNewFunctionName("NewGorm" + NamingUtils.toPascalCase(entity.getEntityName()) + "Repository") // Matches GormRepository template
-                        .servicePackageAlias(deriveGoServicePackagePath(config).substring(deriveGoServicePackagePath(config).lastIndexOf('/') + 1))
-                        .serviceStructName(NamingUtils.toCamelCase(entity.getEntityName()) + "ServiceImpl")
-                        .serviceNewFunctionName("New" + NamingUtils.toPascalCase(entity.getEntityName()) + "Service") // Matches Service template
-                        .handlerPackageAlias(deriveGoHandlerPackagePath(config).substring(deriveGoHandlerPackagePath(config).lastIndexOf('/') + 1))
-                        .handlerStructName(NamingUtils.toPascalCase(entity.getEntityName()) + "Handler")
-                        .handlerNewFunctionName("New" + NamingUtils.toPascalCase(entity.getEntityName()) + "Handler") // Matches Handler template
-                        .handlerSetupRoutesFunctionName("Setup" + NamingUtils.toPascalCase(entity.getEntityName()) + "Routes") // Matches Handler template
+                        .repositoryNewFunctionName("NewGorm" + NamingUtils.toPascalCase(entity.getEntityName()) + "Repository")
+                        .serviceNewFunctionName("New" + NamingUtils.toPascalCase(entity.getEntityName()) + "Service")
+                        .handlerNewFunctionName("New" + NamingUtils.toPascalCase(entity.getEntityName()) + "Handler")
+                        .handlerSetupRoutesFunctionName("Setup" + NamingUtils.toPascalCase(entity.getEntityName()) + "Routes")
                         .build())
                 .collect(Collectors.toList());
     }

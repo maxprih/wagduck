@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KotlinRepositoryGenerator extends BaseFileGenerator<EntityDefinition> {
 
-    private static final String REPOSITORY_TEMPLATE = "kotlin/repository.kt.ftl"; // Path to your Kotlin FTL template
+    private static final String REPOSITORY_TEMPLATE = "kotlin/repository.kt.ftl";
     private final KotlinRepositoryMapper kotlinRepositoryMapper;
 
     public KotlinRepositoryGenerator(FreeMarkerTemplateProcessor templateProcessor, KotlinRepositoryMapper kotlinRepositoryMapper) {
@@ -24,7 +24,7 @@ public class KotlinRepositoryGenerator extends BaseFileGenerator<EntityDefinitio
         boolean hasPrimaryKey = entity.getAttributes().stream().anyMatch(AttributeDefinition::isPrimaryKey);
         if (!hasPrimaryKey) {
             System.err.println("Skipping repository generation for entity " + entity.getEntityName() + " as it has no primary key defined.");
-            return null; // Or throw an exception if a PK is strictly required for all entities
+            return null;
         }
 
         try {
@@ -38,7 +38,7 @@ public class KotlinRepositoryGenerator extends BaseFileGenerator<EntityDefinitio
             return new GeneratedFileResult(fullPath, templateOutput.getBytes());
 
         } catch (Exception e) {
-            e.printStackTrace(); // Replace with proper logging
+            e.printStackTrace();
             throw new RuntimeException("Failed to generate Kotlin repository file for " + entity.getEntityName(), e);
         }
     }

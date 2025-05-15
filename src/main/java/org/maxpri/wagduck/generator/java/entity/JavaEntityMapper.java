@@ -24,8 +24,8 @@ public interface JavaEntityMapper {
     @Mapping(target = "packageName", expression = "java(config.getBasePackage() + \".domain.model\")")
     @Mapping(target = "className", expression = "java(entity.getEntityName())")
     @Mapping(target = "tableName", source = "entity", qualifiedByName = "determineTableName")
-    @Mapping(target = "useLombok", constant = "true") // Assume true for now, could come from config.getEnabledOptions()
-    @Mapping(target = "includeAuditing", constant = "true") // Assume true for now
+    @Mapping(target = "useLombok", constant = "true")
+    @Mapping(target = "includeAuditing", constant = "true")
     @Mapping(target = "attributes", source = "entity.attributes", qualifiedByName = "mapAttributes")
     @Mapping(target = "relationships", expression = "java(mapAllRelationships(config, entity))")
     @Mapping(target = "classAnnotations", source = "entity", qualifiedByName = "generateEntityClassAnnotations")
@@ -33,8 +33,6 @@ public interface JavaEntityMapper {
     @Mapping(target = "createdAtAttribute", source = "entity", qualifiedByName = "generateCreatedAtAttribute")
     @Mapping(target = "updatedAtAttribute", source = "entity", qualifiedByName = "generateUpdatedAtAttribute")
     JavaEntityModel toJavaEntityModel(ProjectConfiguration config, EntityDefinition entity);
-
-    // --- Helper Methods ---
 
     @Named("determineTableName")
     default String determineTableName(EntityDefinition entity) {
@@ -61,30 +59,27 @@ public interface JavaEntityMapper {
             annotations.add("@Id");
             String strategy = "GenerationType.IDENTITY";
             if ("UUID".equals(javaType)) {
-                 strategy = "GenerationType.UUID";
+                strategy = "GenerationType.UUID";
             }
             annotations.add(String.format("@GeneratedValue(strategy = %s)", strategy));
         }
 
         List<String> columnParams = new ArrayList<>();
         String dbColumnName = attr.getColumnName() != null ? attr.getColumnName() : NamingUtils.toSnakeCase(attributeName);
-        if (!dbColumnName.equals(NamingUtils.toSnakeCase(attributeName))) { // Only add if different from default JPA naming
-             columnParams.add(String.format("name = \"%s\"", dbColumnName));
+        if (!dbColumnName.equals(NamingUtils.toSnakeCase(attributeName))) {
+            columnParams.add(String.format("name = \"%s\"", dbColumnName));
         }
-        if (attr.isRequired() && !attr.isPrimaryKey()) { // Nullable is true by default unless PK
+        if (attr.isRequired() && !attr.isPrimaryKey()) {
             columnParams.add("nullable = false");
         }
         if (attr.isUnique()) {
             columnParams.add("unique = true");
         }
-        // TODO: Add columnDefinition for complex types or defaults?
-
-        // --- Validation Annotations (Optional) ---
         if (attr.isRequired()) {
             if ("String".equals(javaType)) {
-                 annotations.add("@NotBlank"); // From jakarta.validation
+                annotations.add("@NotBlank");
             } else {
-                 annotations.add("@NotNull"); // From jakarta.validation
+                annotations.add("@NotNull");
             }
         }
 
@@ -103,18 +98,18 @@ public interface JavaEntityMapper {
 
     @Named("mapRelationships")
     default List<JavaRelationshipModel> mapRelationships(List<RelationshipDefinition> relationships) {
-         if (relationships == null) return Collections.emptyList();
-         return relationships.stream()
-                 .map(this::mapSingleRelationship)
-                 .collect(Collectors.toList());
+        if (relationships == null) return Collections.emptyList();
+        return relationships.stream()
+                .map(this::mapSingleRelationship)
+                .collect(Collectors.toList());
     }
 
-     default JavaRelationshipModel mapSingleRelationship(RelationshipDefinition rel) {
+    default JavaRelationshipModel mapSingleRelationship(RelationshipDefinition rel) {
         String relationshipName = NamingUtils.toCamelCase(rel.getSourceFieldName());
         String targetClassName = NamingUtils.toPascalCase(rel.getTargetEntity().getEntityName());
         String annotation;
         String fieldType;
-        boolean useSet = true; // Default to Set for collections
+        boolean useSet = true;
 
         switch (rel.getRelationshipType()) {
             case ONE_TO_ONE:
@@ -131,16 +126,15 @@ public interface JavaEntityMapper {
             case MANY_TO_ONE:
                 fieldType = targetClassName;
                 String joinColumn = rel.getJoinColumnName() != null ? rel.getJoinColumnName() : NamingUtils.toSnakeCase(relationshipName) + "_id";
-                 annotation = String.format("@ManyToOne(fetch = FetchType.%s)\n    @JoinColumn(name = \"%s\")",
-                         rel.getFetchType(), joinColumn);
+                annotation = String.format("@ManyToOne(fetch = FetchType.%s)\n    @JoinColumn(name = \"%s\")",
+                        rel.getFetchType(), joinColumn);
                 break;
             case ONE_TO_MANY:
-                 fieldType = String.format("Set<%s>", targetClassName); // Or List? Defaulting to Set
-                 // mappedBy is mandatory for OneToMany from non-owning side
-                 String mappedBy = NamingUtils.toCamelCase(rel.getTargetFieldName());
-                 annotation = String.format("@OneToMany(mappedBy = \"%s\", fetch = FetchType.%s, orphanRemoval = true)",
-                         mappedBy, rel.getFetchType());
-                 break;
+                fieldType = String.format("Set<%s>", targetClassName);
+                String mappedBy = NamingUtils.toCamelCase(rel.getTargetFieldName());
+                annotation = String.format("@OneToMany(mappedBy = \"%s\", fetch = FetchType.%s, orphanRemoval = true)",
+                        mappedBy, rel.getFetchType());
+                break;
             case MANY_TO_MANY:
                 fieldType = String.format("Set<%s>", targetClassName);
                 if (rel.isOwningSide()) {
@@ -151,39 +145,32 @@ public interface JavaEntityMapper {
                             rel.getFetchType(), joinTableName, sourceJoinCol, targetJoinCol);
                 } else {
                     String mappedTarget = NamingUtils.toCamelCase(rel.getTargetFieldName());
-                     annotation = String.format("@ManyToMany(mappedBy = \"%s\", fetch = FetchType.%s)", mappedTarget, rel.getFetchType());
+                    annotation = String.format("@ManyToMany(mappedBy = \"%s\", fetch = FetchType.%s)", mappedTarget, rel.getFetchType());
                 }
                 break;
             default:
-                 throw new IllegalArgumentException("Unsupported relationship type: " + rel.getRelationshipType());
+                throw new IllegalArgumentException("Unsupported relationship type: " + rel.getRelationshipType());
         }
 
 
-         return JavaRelationshipModel.builder()
-                 .name(relationshipName)
-                 .type(fieldType)
-                 .annotations(List.of(annotation)) // Wrap annotation string in a list
-                 .build();
-     }
-
-    // --- Annotation Generation Helpers ---
+        return JavaRelationshipModel.builder()
+                .name(relationshipName)
+                .type(fieldType)
+                .annotations(List.of(annotation))
+                .build();
+    }
 
     @Named("generateEntityClassAnnotations")
     default List<String> generateEntityClassAnnotations(EntityDefinition entity) {
         List<String> annotations = new ArrayList<>();
-        boolean useLombok = true; // Assume true
-        boolean includeAuditing = true; // Assume true
+        boolean useLombok = true;
+        boolean includeAuditing = true;
 
         annotations.add("@Entity");
         annotations.add(String.format("@Table(name = \"%s\")", determineTableName(entity)));
 
         if (useLombok) {
-            annotations.add("@Data"); // Includes @Getter, @Setter, @ToString, @EqualsAndHashCode, @RequiredArgsConstructor
-            // Or be more specific:
-            // annotations.add("@Getter");
-            // annotations.add("@Setter");
-            // annotations.add("@ToString"); // Consider excluding lazy-loaded fields
-            // annotations.add("@EqualsAndHashCode(of = \"id\")"); // Base on PK
+            annotations.add("@Data");
             annotations.add("@Builder");
             annotations.add("@NoArgsConstructor");
             annotations.add("@AllArgsConstructor");
@@ -228,54 +215,38 @@ public interface JavaEntityMapper {
         imports.add("jakarta.persistence.*");
 
         if (useLombok) {
-             imports.add("lombok.*");
+            imports.add("lombok.*");
         }
 
         if (enableAuditing) {
-             imports.add("org.springframework.data.annotation.CreatedDate");
-             imports.add("org.springframework.data.annotation.LastModifiedDate");
-             imports.add("org.springframework.data.jpa.domain.support.AuditingEntityListener");
-             imports.add("java.time.LocalDateTime");
+            imports.add("org.springframework.data.annotation.CreatedDate");
+            imports.add("org.springframework.data.annotation.LastModifiedDate");
+            imports.add("org.springframework.data.jpa.domain.support.AuditingEntityListener");
+            imports.add("java.time.LocalDateTime");
         }
 
         if (entity.getAttributes().stream().anyMatch(AttributeDefinition::isRequired)) {
-             imports.add("jakarta.validation.constraints.NotNull");
-             imports.add("jakarta.validation.constraints.NotBlank");
+            imports.add("jakarta.validation.constraints.NotNull");
+            imports.add("jakarta.validation.constraints.NotBlank");
         }
-        // TODO: Add imports for other validation annotations if needed (@Email etc.)
-
-
-        // Collections for relationships
         boolean hasToMany = entity.getRelationships().stream()
                 .anyMatch(r -> r.getRelationshipType() == RelationshipType.ONE_TO_MANY || r.getRelationshipType() == RelationshipType.MANY_TO_MANY);
         if (hasToMany) {
             imports.add("java.util.Set");
             imports.add("java.util.HashSet");
-            // imports.add("java.util.List"); // If using List instead of Set
-            // imports.add("java.util.ArrayList");
         }
-
-        // Data types from attributes
         entity.getAttributes().forEach(attr -> addTypeImport(imports, mapDataType(attr.getDataType())));
-        // PK type if UUID
         entity.getAttributes().stream().filter(AttributeDefinition::isPrimaryKey).findFirst()
                 .ifPresent(pk -> {
                     if ("UUID".equals(mapDataType(pk.getDataType()))) imports.add("java.util.UUID");
                 });
 
-        // Types from relationships (target entities - assuming they are in the same package)
-        // No explicit import needed if in the same package, otherwise add based on target entity's package
-
         return imports;
     }
-
-    // В JavaEntityMapper.java
 
     default List<JavaRelationshipModel> mapAllRelationships(ProjectConfiguration config, EntityDefinition entity) {
         List<JavaRelationshipModel> result = new ArrayList<>();
         Set<String> usedNames = new HashSet<>();
-
-        // Owner side (исходящие)
         if (entity.getRelationships() != null) {
             for (JavaRelationshipModel rel : mapRelationships(entity.getRelationships())) {
                 if (usedNames.add(rel.getName())) {
@@ -283,7 +254,6 @@ public interface JavaEntityMapper {
                 }
             }
         }
-        // Inverse side (входящие)
         List<EntityDefinition> entities = config.getEntities();
         for (EntityDefinition other : entities) {
             if (other == entity || other.getRelationships() == null) continue;
@@ -301,8 +271,8 @@ public interface JavaEntityMapper {
     }
 
     default JavaRelationshipModel mapInverseRelationship(RelationshipDefinition rel, EntityDefinition source, EntityDefinition target) {
-        String relationshipName = org.maxpri.wagduck.util.NamingUtils.toCamelCase(rel.getTargetFieldName());
-        String sourceClassName = org.maxpri.wagduck.util.NamingUtils.toPascalCase(source.getEntityName());
+        String relationshipName = NamingUtils.toCamelCase(rel.getTargetFieldName());
+        String sourceClassName = NamingUtils.toPascalCase(source.getEntityName());
         String annotation;
         String fieldType;
 
@@ -310,28 +280,24 @@ public interface JavaEntityMapper {
         System.out.println(sourceClassName);
         switch (rel.getRelationshipType()) {
             case ONE_TO_MANY:
-                // Inverse для OneToMany — это ManyToOne
                 fieldType = sourceClassName;
                 annotation = String.format("@ManyToOne(fetch = FetchType.%s)\n    @JoinColumn(name = \"%s\")",
-                        rel.getFetchType(), rel.getJoinColumnName() != null ? rel.getJoinColumnName() : org.maxpri.wagduck.util.NamingUtils.toSnakeCase(relationshipName) + "_id");
+                        rel.getFetchType(), rel.getJoinColumnName() != null ? rel.getJoinColumnName() : NamingUtils.toSnakeCase(relationshipName) + "_id");
                 break;
             case MANY_TO_ONE:
-                // Inverse для ManyToOne — это OneToMany
                 fieldType = String.format("Set<%s>", sourceClassName);
                 annotation = String.format("@OneToMany(mappedBy = \"%s\", fetch = FetchType.%s, orphanRemoval = true)",
-                        org.maxpri.wagduck.util.NamingUtils.toCamelCase(rel.getSourceFieldName()), rel.getFetchType());
+                        NamingUtils.toCamelCase(rel.getSourceFieldName()), rel.getFetchType());
                 break;
             case ONE_TO_ONE:
-                // Inverse для OneToOne
                 fieldType = sourceClassName;
                 annotation = String.format("@OneToOne(mappedBy = \"%s\", fetch = FetchType.%s)",
-                        org.maxpri.wagduck.util.NamingUtils.toCamelCase(rel.getSourceFieldName()), rel.getFetchType());
+                        NamingUtils.toCamelCase(rel.getSourceFieldName()), rel.getFetchType());
                 break;
             case MANY_TO_MANY:
-                // Inverse для ManyToMany
                 fieldType = String.format("Set<%s>", sourceClassName);
                 annotation = String.format("@ManyToMany(mappedBy = \"%s\", fetch = FetchType.%s)",
-                        org.maxpri.wagduck.util.NamingUtils.toCamelCase(rel.getSourceFieldName()), rel.getFetchType());
+                        NamingUtils.toCamelCase(rel.getSourceFieldName()), rel.getFetchType());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported relationship type: " + rel.getRelationshipType());
@@ -363,10 +329,10 @@ public interface JavaEntityMapper {
     }
 
     default void addTypeImport(Set<String> imports, String javaType) {
-         if (javaType.startsWith("java.time.") || javaType.startsWith("java.math.")) {
-             imports.add(javaType);
-         } else if ("UUID".equals(javaType)) {
-             imports.add("java.util.UUID");
-         }
-     }
+        if (javaType.startsWith("java.time.") || javaType.startsWith("java.math.")) {
+            imports.add(javaType);
+        } else if ("UUID".equals(javaType)) {
+            imports.add("java.util.UUID");
+        }
+    }
 }

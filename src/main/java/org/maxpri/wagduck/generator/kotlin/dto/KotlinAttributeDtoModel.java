@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 @Builder
 public class KotlinAttributeDtoModel {
-    private String name;            // e.g., username
-    private String baseKotlinType;  // e.g., String, Int, java.time.LocalDateTime
-    private boolean isNullable;     // Determines if '?' should be added
+    private String name;
+    private String baseKotlinType;
+    private boolean isNullable;
     private List<String> annotations;
 }

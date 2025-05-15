@@ -37,9 +37,7 @@ public interface KotlinRepositoryMapper {
         Set<String> imports = new HashSet<>();
         imports.add("org.springframework.data.jpa.repository.JpaRepository");
         imports.add("org.springframework.stereotype.Repository");
-        imports.add(entity.getProjectConfiguration().getBasePackage() + ".domain.model." + NamingUtils.toPascalCase(entity.getEntityName())); // Entity import
-
-        // Add import for PK type if necessary
+        imports.add(entity.getProjectConfiguration().getBasePackage() + ".domain.model." + NamingUtils.toPascalCase(entity.getEntityName()));
         entity.getAttributes().stream()
                 .filter(AttributeDefinition::isPrimaryKey)
                 .findFirst()
@@ -50,8 +48,6 @@ public interface KotlinRepositoryMapper {
         return imports;
     }
 
-    // Helper method to map DB/definition data type to Kotlin base type (non-nullable)
-    // This logic is similar to what's in KotlinEntityMapper. Consider refactoring to a shared utility.
     default String mapDbDataTypeToKotlinBaseType(String definitionType) {
         if (definitionType == null) return "Any";
         return switch (definitionType.toLowerCase()) {
@@ -67,18 +63,15 @@ public interface KotlinRepositoryMapper {
             case "time" -> "java.time.LocalTime";
             case "uuid" -> "java.util.UUID";
             case "blob", "bytea" -> "ByteArray";
-            default -> "String"; // Fallback
+            default -> "String";
         };
     }
 
-    // Helper to add imports for types like BigDecimal, UUID, LocalDateTime etc.
-    // This logic is similar to what's in KotlinEntityMapper. Consider refactoring to a shared utility.
     default void addPotentialKotlinTypeImport(Set<String> imports, String baseKotlinType) {
         if (baseKotlinType.startsWith("java.time.") ||
-            baseKotlinType.startsWith("java.math.") ||
-            baseKotlinType.equals("java.util.UUID")) {
+                baseKotlinType.startsWith("java.math.") ||
+                baseKotlinType.equals("java.util.UUID")) {
             imports.add(baseKotlinType);
         }
-        // Primitives (Int, Long, String, Boolean, Double, Float, ByteArray) don't need explicit imports.
     }
 }

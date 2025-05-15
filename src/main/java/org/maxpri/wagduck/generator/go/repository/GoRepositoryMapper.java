@@ -17,7 +17,6 @@ import java.util.Set;
 @Mapper(componentModel = "spring", uses = {NamingUtils.class})
 public interface GoRepositoryMapper {
 
-    // --- Interface Model Mapping ---
     @Mapping(target = "packageName", expression = "java(deriveGoRepositoryPackage(config))")
     @Mapping(target = "interfaceName", expression = "java(entity.getEntityName() + \"Repository\")")
     @Mapping(target = "entityName", expression = "java(entity.getEntityName())")
@@ -30,11 +29,10 @@ public interface GoRepositoryMapper {
     @Mapping(target = "description", expression = "java(entity.getEntityName() + \"Repository defines the interface for \" + entity.getEntityName().toLowerCase() + \" data operations.\")")
     GoRepositoryInterfaceModel mapToInterfaceModel(EntityDefinition entity, @Context ProjectConfiguration config);
 
-    // --- Implementation Model Mapping ---
     @Mapping(target = "packageName", expression = "java(deriveGoRepositoryPackage(config))")
     @Mapping(target = "structName", expression = "java(\"gorm\" + entity.getEntityName() + \"Repository\")")
     @Mapping(target = "interfaceName", expression = "java(entity.getEntityName() + \"Repository\")")
-    @Mapping(target = "receiverName", expression = "java(String.valueOf(entity.getEntityName().toLowerCase().charAt(0)) + \"r\")") // e.g., ur for UserRepository
+    @Mapping(target = "receiverName", expression = "java(String.valueOf(entity.getEntityName().toLowerCase().charAt(0)) + \"r\")")
     @Mapping(target = "entityName", expression = "java(entity.getEntityName())")
     @Mapping(target = "entityPackageName", expression = "java(deriveGoModelsPackage(config))")
     @Mapping(target = "entityStructName", expression = "java(entity.getEntityName())")
@@ -42,12 +40,9 @@ public interface GoRepositoryMapper {
     @Mapping(target = "entityIdParameterName", expression = "java(org.maxpri.wagduck.util.NamingUtils.toCamelCase(entity.getEntityName()) + \"ID\")")
     @Mapping(target = "entityIdStructField", source = "entity", qualifiedByName = "mapEntityIdStructField")
     @Mapping(target = "imports", source = "entity", qualifiedByName = "collectImplementationImports")
-    @Mapping(target = "methods", source = "entity", qualifiedByName = "generateCRUDMethodsForImplementation") // Methods are same, body handled by template
+    @Mapping(target = "methods", source = "entity", qualifiedByName = "generateCRUDMethodsForImplementation")
     @Mapping(target = "description", expression = "java(\"gorm\" + entity.getEntityName() + \"Repository implements \" + entity.getEntityName() + \"Repository using GORM.\")")
     GoRepositoryImplementationModel mapToImplementationModel(EntityDefinition entity, @Context ProjectConfiguration config);
-
-
-    // --- Helper Methods ---
 
     default String deriveGoRepositoryPackage(@Context ProjectConfiguration config) {
         return "repository";
@@ -65,9 +60,9 @@ public interface GoRepositoryMapper {
     default String mapEntityIdType(EntityDefinition entity) {
         return entity.getAttributes().stream()
                 .filter(AttributeDefinition::isPrimaryKey)
-                .map(attr -> mapToGoDataType(attr.getDataType())) // Use existing or new mapping
+                .map(attr -> mapToGoDataType(attr.getDataType()))
                 .findFirst()
-                .orElse("uint"); // Default ID type
+                .orElse("uint");
     }
 
     @Named("mapEntityIdStructField")
@@ -76,11 +71,10 @@ public interface GoRepositoryMapper {
                 .filter(AttributeDefinition::isPrimaryKey)
                 .map(attr -> NamingUtils.toPascalCase(attr.getAttributeName()))
                 .findFirst()
-                .orElse("ID"); // Default GORM ID field name
+                .orElse("ID");
     }
 
     default String mapToGoDataType(String definitionType) {
-        // This should be consistent with GoEntityMapper's type mapping
         if (definitionType == null) return "interface{}";
         return switch (definitionType.toLowerCase()) {
             case "string", "text", "varchar" -> "string";
@@ -103,17 +97,15 @@ public interface GoRepositoryMapper {
         Set<String> imports = new HashSet<>();
         imports.add("context");
         imports.add(getGoModulePath(config) + "/" + deriveGoModelsPackage(config));
-
-        // Add imports for ID type if needed (e.g., uuid.UUID)
         String idType = mapEntityIdType(entity);
         if ("uuid.UUID".equals(idType)) {
             imports.add("github.com/google/uuid");
         }
-        if ("time.Time".equals(idType) || "*time.Time".equals(idType)){
-             imports.add("time");
+        if ("time.Time".equals(idType) || "*time.Time".equals(idType)) {
+            imports.add("time");
         }
-        if ("decimal.Decimal".equals(idType) || "*decimal.Decimal".equals(idType)){
-             imports.add("github.com/shopspring/decimal");
+        if ("decimal.Decimal".equals(idType) || "*decimal.Decimal".equals(idType)) {
+            imports.add("github.com/shopspring/decimal");
         }
         return imports;
     }
@@ -123,18 +115,18 @@ public interface GoRepositoryMapper {
         Set<String> imports = new HashSet<>();
         imports.add("context");
         imports.add("gorm.io/gorm");
-        imports.add("errors"); // For gorm.ErrRecordNotFound
+        imports.add("errors");
         imports.add(getGoModulePath(config) + "/" + deriveGoModelsPackage(config));
 
         String idType = mapEntityIdType(entity);
         if ("uuid.UUID".equals(idType)) {
             imports.add("github.com/google/uuid");
         }
-         if ("time.Time".equals(idType) || "*time.Time".equals(idType)){
-             imports.add("time");
+        if ("time.Time".equals(idType) || "*time.Time".equals(idType)) {
+            imports.add("time");
         }
-        if ("decimal.Decimal".equals(idType) || "*decimal.Decimal".equals(idType)){
-             imports.add("github.com/shopspring/decimal");
+        if ("decimal.Decimal".equals(idType) || "*decimal.Decimal".equals(idType)) {
+            imports.add("github.com/shopspring/decimal");
         }
         return imports;
     }
@@ -146,7 +138,7 @@ public interface GoRepositoryMapper {
 
     @Named("generateCRUDMethodsForImplementation")
     default List<GoRepositoryMethodModel> generateCRUDMethodsForImplementation(EntityDefinition entity, @Context ProjectConfiguration config) {
-        return generateCRUDMethods(entity, config, true); // Body content might be relevant for impl, but template handles it
+        return generateCRUDMethods(entity, config, true);
     }
 
     default List<GoRepositoryMethodModel> generateCRUDMethods(EntityDefinition entity, @Context ProjectConfiguration config, boolean forImplementation) {
@@ -154,53 +146,41 @@ public interface GoRepositoryMapper {
         String entityName = entity.getEntityName();
         String entityNameLower = entityName.toLowerCase();
         String entityStructName = NamingUtils.toPascalCase(entityName);
-        String modelPackagePrefix = deriveGoModelsPackage(config).substring(deriveGoModelsPackage(config).lastIndexOf('/') + 1) + "."; // e.g., "models."
+        String modelPackagePrefix = deriveGoModelsPackage(config).substring(deriveGoModelsPackage(config).lastIndexOf('/') + 1) + ".";
         String entityModelType = "*" + modelPackagePrefix + entityStructName;
         String entityModelSliceType = "[]" + modelPackagePrefix + entityStructName;
 
         String idType = mapEntityIdType(entity);
         String idParamName = NamingUtils.toCamelCase(entityName) + "ID";
-
-        // Common parameters
         GoParameterModel ctxParam = GoParameterModel.builder().name("ctx").type("context.Context").build();
-
-        // Create
         methods.add(GoRepositoryMethodModel.builder()
                 .name("Create")
                 .description("creates a new " + entityNameLower + " in the database.")
                 .parameters(List.of(ctxParam, GoParameterModel.builder().name(entityNameLower).type(entityModelType).build()))
                 .returnTypes(List.of(GoParameterModel.builder().type(entityModelType).build(), GoParameterModel.builder().type("error").build()))
                 .build());
-
-        // GetByID
         methods.add(GoRepositoryMethodModel.builder()
                 .name("GetByID")
                 .description("retrieves a " + entityNameLower + " by its ID.")
                 .parameters(List.of(ctxParam, GoParameterModel.builder().name(idParamName).type(idType).build()))
                 .returnTypes(List.of(GoParameterModel.builder().type(entityModelType).build(), GoParameterModel.builder().type("error").build()))
                 .build());
-
-        // Update
         methods.add(GoRepositoryMethodModel.builder()
                 .name("Update")
                 .description("updates an existing " + entityNameLower + " in the database.")
                 .parameters(List.of(ctxParam, GoParameterModel.builder().name(entityNameLower).type(entityModelType).build()))
                 .returnTypes(List.of(GoParameterModel.builder().type(entityModelType).build(), GoParameterModel.builder().type("error").build()))
                 .build());
-
-        // Delete
         methods.add(GoRepositoryMethodModel.builder()
                 .name("Delete")
                 .description("deletes a " + entityNameLower + " by its ID.")
                 .parameters(List.of(ctxParam, GoParameterModel.builder().name(idParamName).type(idType).build()))
                 .returnTypes(List.of(GoParameterModel.builder().type("error").build()))
                 .build());
-
-        // List (basic)
         methods.add(GoRepositoryMethodModel.builder()
-                .name("List") // Or ListAll, ListUsers etc.
+                .name("List")
                 .description("retrieves a list of " + entityNameLower + "s.")
-                .parameters(List.of(ctxParam)) // Add pagination/filter params here later
+                .parameters(List.of(ctxParam))
                 .returnTypes(List.of(GoParameterModel.builder().type(entityModelSliceType).build(), GoParameterModel.builder().type("error").build()))
                 .build());
 

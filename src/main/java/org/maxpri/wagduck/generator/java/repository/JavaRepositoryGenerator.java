@@ -23,18 +23,15 @@ public class JavaRepositoryGenerator extends BaseFileGenerator<EntityDefinition>
         try {
             JavaRepositoryModel model = javaRepositoryMapper.toJavaRepositoryModel(config, entity);
             String templateOutput = templateProcessor.process(REPOSITORY_TEMPLATE, model);
-            String filename = model.getInterfaceName() + ".java"; // Use name from model
-
-            // Determine the correct sub-path based on the package
+            String filename = model.getInterfaceName() + ".java";
             String packagePath = model.getPackageName().replace('.', '/');
             String fullPath = "src/main/java/" + packagePath + "/" + filename;
 
             return new GeneratedFileResult(fullPath, templateOutput.getBytes());
 
         } catch (Exception e) {
-            // Log the error properly
             System.err.println("Error generating repository for " + entity.getEntityName() + ": " + e.getMessage());
-            e.printStackTrace(); // Replace with proper logging
+            e.printStackTrace();
             throw new RuntimeException("Failed to generate repository file for " + entity.getEntityName(), e);
         }
     }

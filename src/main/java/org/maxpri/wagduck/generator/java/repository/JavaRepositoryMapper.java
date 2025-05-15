@@ -29,19 +29,13 @@ public interface JavaRepositoryMapper {
         imports.add("org.springframework.data.jpa.repository.JpaRepository");
         imports.add("org.springframework.stereotype.Repository");
         imports.add(config.getBasePackage() + ".domain.model." + entity.getEntityName());
-
-        // Import PK type if it's not primitive/java.lang
         String pkType = NamingUtils.findPrimaryKeyType(entity);
         if ("UUID".equals(pkType)) {
             imports.add("java.util.UUID");
-        } else if (pkType.contains(".")) { // e.g., java.math.BigDecimal
+        } else if (pkType.contains(".")) {
             imports.add(pkType);
         }
 
-        // Removed imports related to ownerId methods (Optional, List, Query, Param, Modifying)
-
         return imports;
     }
-
-    // Removed checkIfOwnerMethodsNeeded method
 }

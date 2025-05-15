@@ -26,19 +26,13 @@ public class JavaEntityGenerator extends BaseFileGenerator<EntityDefinition> {
             JavaEntityModel model = javaEntityMapper.toJavaEntityModel(config, entity);
             String templateOutput = templateProcessor.process(ENTITY_TEMPLATE, model);
             String filename = NamingUtils.toPascalCase(entity.getEntityName()) + ".java";
-
-            // Determine the correct sub-path based on the package
             String packagePath = model.getPackageName().replace('.', '/');
             String fullPath = "src/main/java/" + packagePath + "/" + filename;
-
-            // Return GeneratedFileResult with the relative path for zipping later
             return new GeneratedFileResult(fullPath, templateOutput.getBytes());
 
         } catch (Exception e) {
-            // Log the error properly
             System.err.println("Error generating entity " + entity.getEntityName() + ": " + e.getMessage());
-            e.printStackTrace(); // Replace with proper logging
-            // You might want to re-throw a specific generation exception
+            e.printStackTrace();
             throw new RuntimeException("Failed to generate entity file for " + entity.getEntityName(), e);
         }
     }

@@ -2,11 +2,11 @@ package org.maxpri.wagduck.generator.common;
 
 import org.maxpri.wagduck.domain.entity.ProjectConfiguration;
 import org.maxpri.wagduck.generator.BaseFileGenerator;
-import org.maxpri.wagduck.generator.FreeMarkerTemplateProcessor; // Can reuse even for static files
+import org.maxpri.wagduck.generator.FreeMarkerTemplateProcessor;
 import org.maxpri.wagduck.generator.model.GeneratedFileResult;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections; // For empty map
+import java.util.Collections;
 
 @Component
 public class GitignoreGenerator extends BaseFileGenerator<ProjectConfiguration> {

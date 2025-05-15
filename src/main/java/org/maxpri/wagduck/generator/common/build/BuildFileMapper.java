@@ -16,19 +16,17 @@ import java.util.Set;
 @Mapper(componentModel = "spring", uses = {NamingUtils.class})
 public interface BuildFileMapper {
 
-    // --- Hardcoded Latest Stable Versions (as of knowledge cut-off, update as needed) ---
-    String SPRING_BOOT_VERSION = "3.4.5"; // Update to a recent stable version
-    String KOTLIN_VERSION = "1.9.23";     // Update to a recent stable version
+    String SPRING_BOOT_VERSION = "3.4.5";
+    String KOTLIN_VERSION = "1.9.23";
     String KOTLIN_API_VERSION = "1.9";
     String KOTLIN_LANGUAGE_VERSION = "1.9";
     String MAPSTRUCT_VERSION = "1.5.5.Final";
-    String LOMBOK_VERSION = "1.18.32"; // Update to a recent stable version
+    String LOMBOK_VERSION = "1.18.32";
     String EVO_INFLECTOR_VERSION = "1.3";
-    String SPRING_DOC_OPENAPI_VERSION = "2.5.0"; // Update to a recent stable version
-    String DEPENDENCY_MANAGEMENT_VERSION = "1.1.5"; // For io.spring.dependency-management
+    String SPRING_DOC_OPENAPI_VERSION = "2.5.0";
+    String DEPENDENCY_MANAGEMENT_VERSION = "1.1.5";
 
-    // --- Option Keys (from your original) ---
-    String OPT_USE_LOMBOK = "USE_LOMBOK"; // Will only apply if !useKotlin
+    String OPT_USE_LOMBOK = "USE_LOMBOK";
     String OPT_INCLUDE_OPENAPI = "INCLUDE_OPENAPI";
     String OPT_INCLUDE_ACTUATOR = "INCLUDE_ACTUATOR";
     String OPT_INCLUDE_DEVTOOLS = "INCLUDE_DEVTOOLS";
@@ -71,7 +69,7 @@ public interface BuildFileMapper {
     default String determineMainClassName(ProjectConfiguration config) {
         String appName = NamingUtils.toPascalCase(config.getModuleName()) + "Application";
         if (config.getLanguage() == TargetLanguage.KOTLIN) {
-            return config.getBasePackage() + "." + appName + "Kt"; // Convention for top-level main in Kotlin
+            return config.getBasePackage() + "." + appName + "Kt";
         }
         return config.getBasePackage() + "." + appName;
     }
@@ -115,7 +113,7 @@ public interface BuildFileMapper {
             }
             if (options.contains(OPT_INCLUDE_FLYWAY)) {
                 dbDeps.add(BuildFileModel.Dependency.builder().groupId("org.flywaydb").artifactId("flyway-core").scope("implementation").build());
-                if (config.getDatabaseType() == DatabaseType.POSTGRESQL || config.getDatabaseType() == DatabaseType.MYSQL) { // Add DB specific Flyway driver
+                if (config.getDatabaseType() == DatabaseType.POSTGRESQL || config.getDatabaseType() == DatabaseType.MYSQL) {
                     dbDeps.add(BuildFileModel.Dependency.builder().groupId("org.flywaydb").artifactId("flyway-database-" + config.getDatabaseType().name().toLowerCase()).scope("implementation").build());
                 }
             }
@@ -128,24 +126,16 @@ public interface BuildFileMapper {
         List<BuildFileModel.Dependency> utils = new ArrayList<>();
         Set<String> options = config.getEnabledOptions() != null ? config.getEnabledOptions() : Collections.emptySet();
         boolean isKotlin = config.getLanguage() == TargetLanguage.KOTLIN;
-
-        // Lombok (only if Java and option enabled)
         if (!isKotlin && options.contains(OPT_USE_LOMBOK)) {
             utils.add(BuildFileModel.Dependency.builder().groupId("org.projectlombok").artifactId("lombok").version(LOMBOK_VERSION).scope("compileOnly").build());
             utils.add(BuildFileModel.Dependency.builder().groupId("org.projectlombok").artifactId("lombok").version(LOMBOK_VERSION).scope("annotationProcessor").build());
         }
-
-        // MapStruct (always included)
         utils.add(BuildFileModel.Dependency.builder().groupId("org.mapstruct").artifactId("mapstruct").version(MAPSTRUCT_VERSION).scope("implementation").build());
         utils.add(BuildFileModel.Dependency.builder()
                 .groupId("org.mapstruct").artifactId("mapstruct-processor").version(MAPSTRUCT_VERSION)
                 .scope(isKotlin ? "kapt" : "annotationProcessor")
                 .build());
-
-        // Evo Inflector (assuming always needed)
         utils.add(BuildFileModel.Dependency.builder().groupId("org.atteo").artifactId("evo-inflector").version(EVO_INFLECTOR_VERSION).scope("implementation").build());
-
-        // Spring Boot DevTools
         if (options.contains(OPT_INCLUDE_DEVTOOLS)) {
             utils.add(BuildFileModel.Dependency.builder().groupId("org.springframework.boot").artifactId("spring-boot-devtools").scope("runtimeOnly").build());
         }
@@ -167,8 +157,6 @@ public interface BuildFileMapper {
     @Named("determineJavaCompilerArgs")
     default List<String> determineJavaCompilerArgs(ProjectConfiguration config) {
         List<String> args = new ArrayList<>();
-        // MapStruct compiler arg is generally always needed if MapStruct is used,
-        // regardless of Java or Kotlin (Kapt handles Kotlin, but JavaCompile might still pick up Java sources).
         args.add("-Amapstruct.defaultComponentModel=spring");
         return args;
     }

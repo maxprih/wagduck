@@ -7,7 +7,7 @@ import org.maxpri.wagduck.generator.model.GeneratedFileResult;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JavaApplicationGenerator extends BaseFileGenerator<ProjectConfiguration> { // Input is ProjectConfiguration
+public class JavaApplicationGenerator extends BaseFileGenerator<ProjectConfiguration> {
 
     private static final String APP_TEMPLATE = "java/application.java.ftl";
     private final JavaApplicationMapper applicationMapper;
@@ -18,7 +18,7 @@ public class JavaApplicationGenerator extends BaseFileGenerator<ProjectConfigura
     }
 
     @Override
-    public GeneratedFileResult generate(ProjectConfiguration config, ProjectConfiguration input) { // Input is config
+    public GeneratedFileResult generate(ProjectConfiguration config, ProjectConfiguration input) {
         try {
             JavaApplicationModel model = applicationMapper.toJavaApplicationModel(config);
             String templateOutput = templateProcessor.process(APP_TEMPLATE, model);

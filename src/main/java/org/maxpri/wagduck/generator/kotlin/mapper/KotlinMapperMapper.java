@@ -10,6 +10,7 @@ import org.maxpri.wagduck.util.NamingUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,19 +35,9 @@ public interface KotlinMapperMapper {
         imports.add("org.mapstruct.Mapper");
         imports.add("org.mapstruct.Mapping");
         imports.add("org.mapstruct.MappingTarget");
-
-        // Entity and DTO imports
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".domain.model." + NamingUtils.toPascalCase(entity.getEntityName()));
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".dto." + NamingUtils.toPascalCase(entity.getEntityName()) + "RequestDto");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".dto." + NamingUtils.toPascalCase(entity.getEntityName()) + "ResponseDto");
-
-        // Imports for `uses` mappers (if they are in the same package, not strictly needed, but good practice)
-        // And imports for related entity/DTO types if they are from different packages.
-        // This part can be enhanced if mappers for related entities are in different packages.
-        // For now, MapStruct's `uses` will refer to classes assumed to be in the same package or already imported.
-
-        // Collect related DTO imports from relationships for clarity if needed
-        // This is implicitly handled if all DTOs are in one .dto package and all mappers in one .mapper package.
 
         return imports;
     }
@@ -54,27 +45,21 @@ public interface KotlinMapperMapper {
     @Named("collectUsedMapperNames")
     default List<String> collectUsedMapperNames(EntityDefinition currentEntity) {
         Set<String> relatedEntityNames = new HashSet<>();
-
-        // 1. Direct relationships from currentEntity
         if (currentEntity.getRelationships() != null) {
             currentEntity.getRelationships().stream()
                     .map(RelationshipDefinition::getTargetEntity)
-                    .filter(java.util.Objects::nonNull)
+                    .filter(Objects::nonNull)
                     .map(EntityDefinition::getEntityName)
                     .forEach(relatedEntityNames::add);
         }
-
-        // 2. Inverse relationships: find entities that have a relationship TO currentEntity
-        //    and for which currentEntity would have a corresponding field.
         for (EntityDefinition otherEntity : currentEntity.getProjectConfiguration().getEntities()) {
             if (otherEntity.equals(currentEntity) || otherEntity.getRelationships() == null) {
                 continue;
             }
             for (RelationshipDefinition relOnOther : otherEntity.getRelationships()) {
                 if (relOnOther.getTargetEntity() != null &&
-                    relOnOther.getTargetEntity().getEntityName().equals(currentEntity.getEntityName()) &&
-                    relOnOther.getTargetFieldName() != null && !relOnOther.getTargetFieldName().isBlank()) {
-                    // otherEntity is related to currentEntity, so currentEntity's mapper might need otherEntity's mapper
+                        relOnOther.getTargetEntity().getEntityName().equals(currentEntity.getEntityName()) &&
+                        relOnOther.getTargetFieldName() != null && !relOnOther.getTargetFieldName().isBlank()) {
                     relatedEntityNames.add(otherEntity.getEntityName());
                 }
             }

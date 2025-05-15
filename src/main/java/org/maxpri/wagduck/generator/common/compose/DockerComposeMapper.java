@@ -16,13 +16,13 @@ public interface DockerComposeMapper {
     String DEFAULT_DB_PASSWORD = "password";
 
     @Mapping(target = "appServiceName", source = "moduleName")
-    @Mapping(target = "appPort", constant = "8080") // Default
+    @Mapping(target = "appPort", constant = "8080")
     @Mapping(target = "databaseType", source = "databaseType")
     @Mapping(target = "dbServiceName", constant = DEFAULT_DB_SERVICE_NAME)
     @Mapping(target = "dbImage", source = "config", qualifiedByName = "determineDbImage")
     @Mapping(target = "dbVolumeName", expression = "java(deriveDbVolumeName(config))")
     @Mapping(target = "dbPort", source = "config", qualifiedByName = "determineDbPort")
-    @Mapping(target = "dbName", source = "moduleName") // Use moduleName as default DB name
+    @Mapping(target = "dbName", source = "moduleName")
     @Mapping(target = "dbUser", constant = DEFAULT_DB_USER)
     @Mapping(target = "dbPassword", constant = DEFAULT_DB_PASSWORD)
     @Mapping(target = "dbEnvVars", source = "config", qualifiedByName = "determineDbEnvVars")
@@ -35,7 +35,7 @@ public interface DockerComposeMapper {
         return switch (config.getDatabaseType()) {
             case POSTGRESQL -> "postgres:15";
             case MYSQL -> "mysql:8";
-            default -> null; // No image for H2/NONE
+            default -> null;
         };
     }
 
@@ -73,14 +73,14 @@ public interface DockerComposeMapper {
                 envVars.put("MYSQL_ROOT_PASSWORD", DEFAULT_DB_PASSWORD);
                 break;
             default:
-                break; // No env vars needed for H2/NONE
+                break;
         }
         return envVars;
     }
 
     @Named("determineAppDbUrl")
     default String determineAppDbUrl(ProjectConfiguration config) {
-        String dbHost = DEFAULT_DB_SERVICE_NAME; // Use the service name
+        String dbHost = DEFAULT_DB_SERVICE_NAME;
         String port = determineDbPort(config);
         String dbName = config.getModuleName() != null ? config.getModuleName() : "appdb";
 
@@ -88,7 +88,7 @@ public interface DockerComposeMapper {
             case POSTGRESQL -> String.format("jdbc:postgresql://%s:%s/%s", dbHost, port, dbName);
             case MYSQL -> String.format("jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true", dbHost, port, dbName);
             case H2 -> "jdbc:h2:mem:" + dbName + "db";
-            default -> ""; // No URL for NONE
+            default -> "";
         };
     }
 }

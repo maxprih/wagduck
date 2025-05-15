@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class GoDockerfileModel {
-    private String goVersion; // e.g., "1.21"
-    private String alpineVersion; // e.g., "3.19" (for the final stage)
-    private String appBinaryName; // Name of the compiled executable, e.g., "myservice"
-    private String exposedPort; // Port the application listens on inside the container, e.g., "8080"
+    private String goVersion;
+    private String alpineVersion;
+    private String appBinaryName;
+    private String exposedPort;
 }

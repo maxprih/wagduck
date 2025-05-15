@@ -8,15 +8,15 @@ import java.util.Set;
 @Data
 @Builder
 public class GoRepositoryInterfaceModel {
-    private String packageName; // e.g., repository
-    private String interfaceName; // e.g., UserRepository
-    private String entityName; // e.g., User (PascalCase)
-    private String entityPackageName; // e.g., model (where User struct is defined)
-    private String entityStructName; // e.g., User
-    private String entityIdType; // e.g., uint, string (for GetByID, Delete)
-    private String entityIdParameterName; // e.g., userID, id
-    private Set<String> imports; // e.g., "context", "github.com/your-module/internal/model"
+    private String packageName;
+    private String interfaceName;
+    private String entityName;
+    private String entityPackageName;
+    private String entityStructName;
+    private String entityIdType;
+    private String entityIdParameterName;
+    private Set<String> imports;
     private List<GoRepositoryMethodModel> methods;
-    private String description; // e.g., "UserRepository defines the interface for user data operations."
+    private String description;
     private String modulePath;
 }

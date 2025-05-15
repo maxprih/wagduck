@@ -25,7 +25,7 @@ public interface JavaMapperMapper {
     @Mapping(target = "dtoPackage", expression = "java(config.getBasePackage() + \".dto\")")
     @Mapping(target = "primaryKeyType", expression = "java(org.maxpri.wagduck.util.NamingUtils.findPrimaryKeyType(entity))")
     @Mapping(target = "imports", source = "entity", qualifiedByName = "collectMapperImports")
-    @Mapping(target = "toDtoMappings", expression = "java(new java.util.ArrayList<String>())") // Start empty, add specific later if needed
+    @Mapping(target = "toDtoMappings", expression = "java(new java.util.ArrayList<String>())")
     @Mapping(target = "toEntityMappings", expression = "java(generateToEntityMappings(entity))")
     @Mapping(target = "updateMappings", expression = "java(generateUpdateMappings(entity))")
     JavaMapperModel toJavaMapperModel(ProjectConfiguration config, EntityDefinition entity);

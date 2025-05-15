@@ -8,10 +8,9 @@ import java.util.List;
 @Data
 @Builder
 public class JavaAttributeModel {
-    private String name; // e.g., userId
-    private String type; // e.g., Long, String, UUID, Integer, BigDecimal, LocalDate
-    private String description; // JavaDoc
+    private String name;
+    private String type;
+    private String description;
     private boolean isPrimaryKey;
-    private List<String> annotations; // e.g., "@Id", "@Column(name = "user_name")", "@NotNull" (from jakarta.validation if needed)
-    // We put full annotations here to give the template more control
+    private List<String> annotations;
 }

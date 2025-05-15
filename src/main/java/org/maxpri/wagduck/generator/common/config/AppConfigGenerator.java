@@ -13,7 +13,7 @@ import java.util.Set;
 public class AppConfigGenerator extends BaseFileGenerator<ProjectConfiguration> {
 
     private final AppConfigMapper appConfigMapper;
-    private static final String OPT_USE_YAML_CONFIG = "USE_YAML_CONFIG"; // Standardize option name
+    private static final String OPT_USE_YAML_CONFIG = "USE_YAML_CONFIG";
 
     public AppConfigGenerator(FreeMarkerTemplateProcessor templateProcessor, AppConfigMapper appConfigMapper) {
         super(templateProcessor);
@@ -27,19 +27,13 @@ public class AppConfigGenerator extends BaseFileGenerator<ProjectConfiguration> 
             String templateName;
             String filename;
             Set<String> options = config.getEnabledOptions() != null ? config.getEnabledOptions() : Collections.emptySet();
-
-
-            // Determine template and filename based on options
             if (options.contains(OPT_USE_YAML_CONFIG)) {
                 templateName = "java/application.yml.ftl";
                 filename = "application.yml";
-            } else { // Default to properties
+            } else {
                 templateName = "common/application.properties.ftl";
                 filename = "application.properties";
             }
-
-            // Pass basePackage to the model if needed by the template (e.g., for logging path)
-            // Alternatively, modify AppConfigModel to include it. For now, template can use a default.
             String templateOutput = templateProcessor.process(templateName, model);
 
             String fullPath = "src/main/resources/" + filename;

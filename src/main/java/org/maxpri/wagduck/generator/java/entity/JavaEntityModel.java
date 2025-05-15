@@ -9,16 +9,16 @@ import java.util.Set;
 @Data
 @Builder
 public class JavaEntityModel {
-    private String packageName; // e.g., org.maxpri.wagduck.domain.model
-    private String className;   // e.g., User
-    private String tableName;   // e.g., users or tbl_users
-    private String description; // Class JavaDoc
+    private String packageName;
+    private String className;
+    private String tableName;
+    private String description;
 
-    private boolean includeAuditing = true; // Flag to include @EntityListeners(AuditingEntityListener.class) and auditing fields
-    private boolean useLombok = true;      // Flag from project options (assuming default true for now)
+    private boolean includeAuditing = true;
+    private boolean useLombok = true;
 
-    private Set<String> imports; // All necessary imports
-    private List<String> classAnnotations; // e.g., "@Entity", "@Table(name = "users")", Lombok, Auditing
+    private Set<String> imports;
+    private List<String> classAnnotations;
 
     private List<JavaAttributeModel> attributes;
     private List<JavaRelationshipModel> relationships;

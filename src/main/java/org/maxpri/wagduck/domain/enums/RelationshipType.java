@@ -1,8 +1,5 @@
 package org.maxpri.wagduck.domain.enums;
 
-/**
- * Types of relationships between entities
- */
 public enum RelationshipType {
     ONE_TO_ONE,
     ONE_TO_MANY,

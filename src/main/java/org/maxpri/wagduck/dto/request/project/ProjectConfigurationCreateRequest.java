@@ -34,7 +34,6 @@ public class ProjectConfigurationCreateRequest {
     @Size(max = 20, message = "Framework version must be less than 20 characters")
     private String frameworkVersion;
 
-    // Java/Kotlin-specific
     private BuildTool buildTool;
 
     @Pattern(regexp = "^([a-zA-Z_]{1}[a-zA-Z0-9_]*(\\.[a-zA-Z_]{1}[a-zA-Z0-9_]*)*)?$", message = "Invalid Java/Kotlin package name format")

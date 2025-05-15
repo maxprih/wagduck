@@ -23,8 +23,7 @@ public interface GoDbConfigMapper {
     GoDbConfigFileModel mapToDbConfigFileModel(ProjectConfiguration config);
 
     default String deriveGoConfigPackage(ProjectConfiguration config) {
-        // return config.getGoConfigPackagePath(); // Ideal
-        return "config"; // Default
+        return "config";
     }
 
     @Named("collectDbConfigImports")

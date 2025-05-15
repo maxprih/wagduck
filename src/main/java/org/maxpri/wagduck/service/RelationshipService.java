@@ -3,6 +3,7 @@ package org.maxpri.wagduck.service;
 import lombok.RequiredArgsConstructor;
 import org.maxpri.wagduck.domain.entity.EntityDefinition;
 import org.maxpri.wagduck.domain.entity.RelationshipDefinition;
+import org.maxpri.wagduck.domain.enums.RelationshipType;
 import org.maxpri.wagduck.dto.request.entity.RelationshipDefinitionRequest;
 import org.maxpri.wagduck.dto.response.entity.RelationshipDefinitionResponse;
 import org.maxpri.wagduck.exception.DuplicateRelationshipException;
@@ -50,11 +51,7 @@ public class RelationshipService {
         EntityDefinition targetEntity = entityService.findEntityByIdInternal(request.getTargetEntityId());
         relationship.setSourceEntity(sourceEntity);
         relationship.setTargetEntity(targetEntity);
-
-        // Сохраняем основную связь
         RelationshipDefinition saved = relationshipRepository.save(relationship);
-
-        // Если задано targetFieldName — создаём обратную связь
         if (request.getTargetFieldName() != null && !request.getTargetFieldName().isBlank()) {
             RelationshipDefinition inverse = new RelationshipDefinition();
             inverse.setSourceEntity(targetEntity);
@@ -62,26 +59,24 @@ public class RelationshipService {
             inverse.setTargetEntity(sourceEntity);
             inverse.setTargetFieldName(request.getSourceFieldName());
             inverse.setFetchType(relationship.getFetchType());
-
-            // Определяем тип и владельца для обратной стороны
             switch (relationship.getRelationshipType()) {
                 case ONE_TO_MANY -> {
-                    inverse.setRelationshipType(org.maxpri.wagduck.domain.enums.RelationshipType.MANY_TO_ONE);
+                    inverse.setRelationshipType(RelationshipType.MANY_TO_ONE);
                     inverse.setOwningSide(true);
                     inverse.setJoinColumnName(relationship.getJoinColumnName());
                 }
                 case MANY_TO_ONE -> {
-                    inverse.setRelationshipType(org.maxpri.wagduck.domain.enums.RelationshipType.ONE_TO_MANY);
+                    inverse.setRelationshipType(RelationshipType.ONE_TO_MANY);
                     inverse.setOwningSide(false);
                     inverse.setJoinColumnName(relationship.getJoinColumnName());
                 }
                 case ONE_TO_ONE -> {
-                    inverse.setRelationshipType(org.maxpri.wagduck.domain.enums.RelationshipType.ONE_TO_ONE);
+                    inverse.setRelationshipType(RelationshipType.ONE_TO_ONE);
                     inverse.setOwningSide(!relationship.isOwningSide());
                     inverse.setJoinColumnName(relationship.getJoinColumnName());
                 }
                 case MANY_TO_MANY -> {
-                    inverse.setRelationshipType(org.maxpri.wagduck.domain.enums.RelationshipType.MANY_TO_MANY);
+                    inverse.setRelationshipType(RelationshipType.MANY_TO_MANY);
                     inverse.setOwningSide(false);
                     inverse.setJoinTableName(relationship.getJoinTableName());
                     inverse.setJoinTableSourceColumnName(relationship.getJoinTableTargetColumnName());
@@ -106,8 +101,6 @@ public class RelationshipService {
     public RelationshipDefinitionResponse updateRelationship(UUID relationshipId, RelationshipDefinitionRequest request) {
         RelationshipDefinition relationship = findRelationshipByIdInternal(relationshipId);
         relationship.setSourceFieldName(request.getSourceFieldName());
-        // обновить другие поля по необходимости
-        // при необходимости обновить sourceEntity/targetEntity
         return relationshipMapper.entityToResponse(relationshipRepository.save(relationship));
     }
 

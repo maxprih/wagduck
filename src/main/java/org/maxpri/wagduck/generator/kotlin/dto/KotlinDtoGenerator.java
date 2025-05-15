@@ -29,7 +29,7 @@ public class KotlinDtoGenerator extends BaseFileGenerator<EntityDefinition> {
 
             return new GeneratedFileResult(fullPath, templateOutput.getBytes());
         } catch (Exception e) {
-            e.printStackTrace(); // Replace with proper logging
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

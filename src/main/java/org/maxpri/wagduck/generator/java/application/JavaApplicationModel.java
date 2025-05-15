@@ -9,8 +9,8 @@ import java.util.Set;
 @Data
 @Builder
 public class JavaApplicationModel {
-    private String packageName; // Base package
-    private String className;   // e.g., MyProjectApplication
-    private Set<String> imports; // Just SpringBootApplication for basic setup
-    private List<String> annotations; // Just @SpringBootApplication
+    private String packageName;
+    private String className;
+    private Set<String> imports;
+    private List<String> annotations;
 }

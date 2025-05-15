@@ -8,15 +8,14 @@ import java.util.Set;
 @Data
 @Builder
 public class GoServiceInterfaceModel {
-    private String packageName; // e.g., service
-    private String interfaceName; // e.g., UserService
-    private String entityName; // e.g., User (PascalCase)
-    private String entityPackageName; // e.g., models (where User struct is defined)
-    private String entityStructName; // e.g., User
-    private String entityIdType; // e.g., uint, string (for GetByID, Delete)
-    // DTO package if we were using DTOs: private String dtoPackageName;
-    private Set<String> imports; // e.g., "context", "github.com/your-module/internal/models"
+    private String packageName;
+    private String interfaceName;
+    private String entityName;
+    private String entityPackageName;
+    private String entityStructName;
+    private String entityIdType;
+    private Set<String> imports;
     private List<GoServiceMethodModel> methods;
-    private String description; // e.g., "UserService defines the interface for user business logic."
+    private String description;
     private String modulePath;
 }

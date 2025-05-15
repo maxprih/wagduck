@@ -38,7 +38,7 @@ public class KotlinServiceGenerator extends BaseFileGenerator<EntityDefinition> 
             return new GeneratedFileResult(fullPath, templateOutput.getBytes());
         } catch (Exception e) {
             System.err.println("Error generating Kotlin Service for " + entity.getEntityName() + ": " + e.getMessage());
-            e.printStackTrace(); // Replace with proper logging
+            e.printStackTrace();
             throw new RuntimeException("Failed to generate Kotlin Service for " + entity.getEntityName(), e);
         }
     }

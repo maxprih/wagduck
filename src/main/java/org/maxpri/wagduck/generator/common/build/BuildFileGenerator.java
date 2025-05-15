@@ -8,7 +8,7 @@ import org.maxpri.wagduck.generator.model.GeneratedFileResult;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BuildFileGenerator extends BaseFileGenerator<ProjectConfiguration> { // Input is ProjectConfiguration
+public class BuildFileGenerator extends BaseFileGenerator<ProjectConfiguration> {
 
     private final BuildFileMapper buildFileMapper;
 
@@ -18,7 +18,7 @@ public class BuildFileGenerator extends BaseFileGenerator<ProjectConfiguration> 
     }
 
     @Override
-    public GeneratedFileResult generate(ProjectConfiguration config, ProjectConfiguration input) { // Input is config itself
+    public GeneratedFileResult generate(ProjectConfiguration config, ProjectConfiguration input) {
         try {
             BuildFileModel model = buildFileMapper.toBuildFileModel(config);
             String templateName;
@@ -27,14 +27,12 @@ public class BuildFileGenerator extends BaseFileGenerator<ProjectConfiguration> 
             if (config.getBuildTool() == BuildTool.GRADLE) {
                 templateName = "common/build.gradle.kts.ftl";
                 filename = "build.gradle.kts";
-            } else { // Default to Maven
+            } else {
                 templateName = "java/pom.xml.ftl";
                 filename = "pom.xml";
             }
 
             String templateOutput = templateProcessor.process(templateName, model);
-
-            // Build files go in the root directory
             return new GeneratedFileResult(filename, templateOutput.getBytes());
 
         } catch (Exception e) {

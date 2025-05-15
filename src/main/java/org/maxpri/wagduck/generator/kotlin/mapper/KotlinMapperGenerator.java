@@ -33,7 +33,7 @@ public class KotlinMapperGenerator extends BaseFileGenerator<EntityDefinition> {
 
         } catch (Exception e) {
             System.err.println("Error generating Kotlin DTO-Entity Mapper for " + entity.getEntityName() + ": " + e.getMessage());
-            e.printStackTrace(); // Replace with proper logging
+            e.printStackTrace();
             throw new RuntimeException("Failed to generate Kotlin DTO-Entity Mapper for " + entity.getEntityName(), e);
         }
     }

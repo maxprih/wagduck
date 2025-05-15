@@ -35,7 +35,7 @@ public interface KotlinServiceMapper {
         return attributes.stream()
                 .filter(AttributeDefinition::isPrimaryKey)
                 .findFirst()
-                .map(attr -> mapDbDataTypeToKotlinBaseType(attr.getDataType())) // Use shared utility or local method
+                .map(attr -> mapDbDataTypeToKotlinBaseType(attr.getDataType()))
                 .orElseThrow(() -> new IllegalStateException("Entity must have a primary key attribute for service generation."));
     }
 
@@ -52,19 +52,13 @@ public interface KotlinServiceMapper {
     default Set<String> collectServiceImports(EntityDefinition entity) {
         Set<String> imports = new HashSet<>();
         imports.add("org.springframework.stereotype.Service");
-        imports.add("org.springframework.transaction.annotation.Transactional"); // Common for service methods
-
-        // Entity, DTOs, Mapper, Repository imports (already covered by direct mappings in KotlinServiceDefModel)
+        imports.add("org.springframework.transaction.annotation.Transactional");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".domain.model." + NamingUtils.toPascalCase(entity.getEntityName()));
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".dto." + NamingUtils.toPascalCase(entity.getEntityName()) + "RequestDto");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".dto." + NamingUtils.toPascalCase(entity.getEntityName()) + "ResponseDto");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".mapper." + NamingUtils.toPascalCase(entity.getEntityName()) + "Mapper");
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".repository." + NamingUtils.toPascalCase(entity.getEntityName()) + "Repository");
-
-        // Exception import
         imports.add(entity.getProjectConfiguration().getBasePackage() + ".exception.EntityNotFoundException");
-
-        // PK Type import if needed
         entity.getAttributes().stream()
                 .filter(AttributeDefinition::isPrimaryKey)
                 .findFirst()
@@ -76,7 +70,6 @@ public interface KotlinServiceMapper {
         return imports;
     }
 
-    // --- Utility methods (ideally refactor to a shared class) ---
     default String mapDbDataTypeToKotlinBaseType(String definitionType) {
         if (definitionType == null) return "Any";
         return switch (definitionType.toLowerCase()) {

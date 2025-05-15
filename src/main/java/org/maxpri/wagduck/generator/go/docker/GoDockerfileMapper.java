@@ -8,9 +8,9 @@ import org.maxpri.wagduck.domain.entity.ProjectConfiguration;
 public interface GoDockerfileMapper {
 
     @Mapping(target = "goVersion", expression = "java(getProjectGoVersion(config, \"1.21\"))")
-    @Mapping(target = "alpineVersion", constant = "3.19") // A recent Alpine version
-    @Mapping(target = "appBinaryName", expression = "java(getProjectAppName(config, \"app\"))") // Default to "app"
-    @Mapping(target = "exposedPort", constant = "8080") // Matches default SERVER_PORT in main.go
+    @Mapping(target = "alpineVersion", constant = "3.19")
+    @Mapping(target = "appBinaryName", expression = "java(getProjectAppName(config, \"app\"))")
+    @Mapping(target = "exposedPort", constant = "8080")
     GoDockerfileModel mapToDockerfileModel(ProjectConfiguration config);
 
     default String getProjectGoVersion(ProjectConfiguration config, String defaultValue) {
